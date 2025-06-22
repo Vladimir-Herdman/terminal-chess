@@ -1,3 +1,13 @@
+// TODO
+    // Configuration file
+        // Should be able to change all colors and symbols used throughout
+        // Turn on / off a lot of settings, like highlight move, abc123 row/cols
+    // Break apart some sections so more readable
+    // Seperate code into other header and source files for logic based main.cpp
+    // Learn cmake for better make file setup for others and deviceas
+    // Command line arguments
+        // Start from black side
+        // Show both sides at once
 #include <stdbool.h>
 #include <iostream>
 #include <string>
