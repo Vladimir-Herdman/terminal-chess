@@ -12,6 +12,8 @@
 #include <iostream>
 #include <string>
 
+# include "ConfigReader.h"
+
 //ESC[38;2;{r};{g};{b}m - \x1B[38;2;255;255;255m(white) - Set foreground color as RGB
 //ESC[48;2;{r};{g};{b}m - \1xB[48;2;255;255;255m(white) - Set background color as RGB
 //ESC[0m - \x1B[0m - reset all modes styles and colors
@@ -90,5 +92,9 @@ void initializeWhiteBoard() {
 }
 
 int main(int argc, char *argv[]) {
+    // Read in config file
+
+    ConfigReader();
+    // Show boards
     initializeWhiteBoard();
 }
