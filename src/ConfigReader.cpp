@@ -7,41 +7,9 @@
 #include <iostream> //REMOVE
 #include <string>
 #include "ConfigReader.h"
+#include "ConfigMap.h"
 
 // Unnamed namespace in place of static so it can apply to type declaration as well
-// Define defaults here in case of no config file
-ConfigData CONFIG = {
-    .COLORS {
-        .b_black = "\x1B[48;2;000;000;000m",
-        .b_brown = "\x1B[48;2;082;031;000m",
-        .b_white = "\x1B[48;2;234;233;230m",
-
-        .f_black = "\x1B[38;2;000;000;000m",
-
-        .reset = "\x1B[0m",
-    },
-    .PIECES {
-        .pawn = " \u2659 ",
-        .rook = " \u2656 ",
-        .knight = " \u2658 ",
-        .bishop = " \u2657 ",
-        .queen = " \u2655 ",
-        .king = " \u2654 ",
-    },
-};
-
-namespace {
-    using ptr_configFunction = void (*)(std::string&);
-
-    static void background_color(std::string &value) { std::cout << "Test worked" << '\n'; }
-    static void foreground_color(std::string& value) { std::cout << "Test worked" << '\n'; }
-
-    std::map<std::string, ptr_configFunction> config_map = {
-        {"test", background_color},
-        {"test2", foreground_color},
-    };
-}
-
 ConfigReader::ConfigReader() {
     std::string line;
     std::ifstream config_file("/home/vova/Code/terminal-chess/example_config/chess.conf");

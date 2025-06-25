@@ -13,6 +13,7 @@
 #include <string>
 
 #include "ConfigReader.h"
+#include "ConfigData.h"
 
 //ESC[38;2;{r};{g};{b}m - \x1B[38;2;255;255;255m(white) - Set foreground color as RGB
 //ESC[48;2;{r};{g};{b}m - \1xB[48;2;255;255;255m(white) - Set background color as RGB

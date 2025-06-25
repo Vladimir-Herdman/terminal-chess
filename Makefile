@@ -1,6 +1,6 @@
 CXX = clang++
 CXXFLAGS = -std=c++20
-OBJ = build/ConfigReader.o
+OBJ = build/ConfigReader.o build/ConfigData.o build/ConfigMap.o
 
 build/main: src/main.cpp build/ ${OBJ}
 	@${CXX} ${CXXFLAGS} $< ${OBJ} -o $@
@@ -11,6 +11,12 @@ build/:
 
 build/ConfigReader.o: src/ConfigReader.cpp
 	@clang++ -c src/ConfigReader.cpp -o build/ConfigReader.o
+
+build/ConfigData.o: src/ConfigData.cpp
+	@clang++ -c src/ConfigData.cpp -o build/ConfigData.o
+
+build/ConfigMap.o: src/ConfigMap.cpp
+	@clang++ -c src/ConfigMap.cpp -o build/ConfigMap.o
 
 # Here, we have litte make scripts we can use
 # 	.PHONY says, hey, this 'file' is always out of date, so always execute
