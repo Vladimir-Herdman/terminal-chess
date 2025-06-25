@@ -19,7 +19,6 @@
 //ESC[0m - \x1B[0m - reset all modes styles and colors
 //(165, 42, 42
 
-CONFIGS CONFIG;
 auto& PIECES = CONFIG.PIECES;
 auto& COLORS = CONFIG.COLORS;
 
@@ -88,7 +87,7 @@ void initializeWhiteBoard() {
 
 int main(int argc, char *argv[]) {
     // Read in config file
-    ConfigReader configReader(CONFIG);
+    ConfigReader();
 
     // Show boards
     initializeWhiteBoard();

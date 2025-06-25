@@ -2,32 +2,33 @@
 #define CONFIGREADER_H
 
 #include <string>
+#include <map>
 
-// Define defaults here in case of no config file
-struct CONFIGS {
+struct ConfigData {
     struct {
-        std::string b_black = "\x1B[48;2;000;000;000m";
-        std::string b_brown = "\x1B[48;2;082;031;000m";
-        std::string b_white = "\x1B[48;2;234;233;230m";
+        std::string b_black;
+        std::string b_brown;
+        std::string b_white;
 
-        std::string f_black = "\x1B[38;2;000;000;000m";
+        std::string f_black;
 
-        std::string reset = "\x1B[0m";
+        std::string reset;
     } COLORS;
     struct {
-        std::string pawn = " \u2659 ";
-        std::string rook = " \u2656 ";
-        std::string knight = " \u2658 ";
-        std::string bishop = " \u2657 ";
-        std::string queen = " \u2655 ";
-        std::string king = " \u2654 ";
+        std::string pawn;
+        std::string rook;
+        std::string knight;
+        std::string bishop;
+        std::string queen;
+        std::string king;
     } PIECES;
 };
+extern ConfigData CONFIG;
 
 class ConfigReader {
 public:
     // Will check for config file, read from it, and determine used variables set
-    ConfigReader(CONFIGS& CONFIGS);
+    ConfigReader();
 
 private:
     // will clean line, and return where '=' sign at if found
