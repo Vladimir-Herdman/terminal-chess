@@ -1,39 +1,32 @@
 CXX = clang++
 CXXFLAGS = -std=c++20
-OBJ = build/main.o build/ConfigReader.o build/ConfigData.o build/ConfigMap.o
 
-build/main: build/ ${OBJ}
+# Extremely cool .cpp to .o setup and recipes here for easier src additions
+SRC := ${shell find src/ -name "*.cpp"}
+OBJ := ${patsubst src/%.cpp, build/%.o, $(SRC)}
+
+bin/main: ${OBJ}
+	@mkdir -p $(dir $@)
 	@${CXX} ${CXXFLAGS} ${OBJ} -o $@
-	@./$@
 
-build/:
-	@mkdir -p build
-
-build/main.o: src/main.cpp
-	@clang++ -c src/main.cpp -o build/main.o
-
-build/ConfigReader.o: src/ConfigReader.cpp
-	@clang++ -c src/ConfigReader.cpp -o build/ConfigReader.o
-
-build/ConfigData.o: src/ConfigData.cpp
-	@clang++ -c src/ConfigData.cpp -o build/ConfigData.o
-
-build/ConfigMap.o: src/ConfigMap.cpp
-	@clang++ -c src/ConfigMap.cpp -o build/ConfigMap.o
+build/%.o: src/%.cpp
+	@mkdir -p $(dir $@)
+	@${CXX} ${CXXFLAGS} -c $< -o $@
 
 # Here, we have litte make scripts we can use
 # 	.PHONY says, hey, this 'file' is always out of date, so always execute
 # 	what we have written in here
 .PHONY: clean test run
 clean: 
-	@for i in build/*; do echo "  removing file $$i"; rm $$i; done
+	@echo '    cleaning build/ and bin/ directories...'
+	@rm -rf build/ bin/
 
 test:
-	@${CXX} ${CXXFLAGS} test/test.cpp -o build/test
-	@./build/test
+	@${CXX} ${CXXFLAGS} test/test.cpp -o bin/test
+	@./bin/test
 
-run: build/ build/main
-	@./build/main
+run:
+	@./bin/main
 
 # Notes
 # 	@ Before a command makes it silent, so you won't see what's ran
