@@ -1,5 +1,5 @@
-#ifndef CONFIGREADER_H
-#define CONFIGREADER_H
+#ifndef TERMINAL_CHESS_CONFIGREADER_H
+#define TERMINAL_CHESS_CONFIGREADER_H
 
 #include <string>
 
@@ -13,4 +13,4 @@ private:
     int cleanLine(std::string& line);
 };
 
-#endif //CONFIGREADER_H
+#endif //TERMINAL_CHESS_CONFIGREADER_H

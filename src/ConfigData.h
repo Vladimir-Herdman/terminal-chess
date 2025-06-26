@@ -1,15 +1,17 @@
-#ifndef CONFIGDATA_H
-#define CONFIGDATA_H
+#ifndef TERMINALCHESS_CONFIGDATA_H
+#define TERMINALCHESS_CONFIGDATA_H
 
 #include <string>
 
 namespace {
     struct Color {
-        std::string b_black;
-        std::string b_brown;
-        std::string b_white;
+        std::string edge;
 
-        std::string f_black;
+        std::string b_bg;
+        std::string b_fg;
+
+        std::string w_bg;
+        std::string w_fg;
 
         std::string reset;
     };
@@ -30,4 +32,4 @@ struct ConfigData {
 };
 extern ConfigData CONFIG;
 
-#endif //CONFIGDATA_H
+#endif //TERMINALCHESS_CONFIGDATA_H

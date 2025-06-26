@@ -42,10 +42,10 @@ void setPiece(enum enum_pieces piece) {
 
 void initializeWhiteBoard() {
     int i, j;
-    std::string edge_h = COLORS.b_brown + "   " + COLORS.reset;
-    std::string edge_v = COLORS.b_brown + "  " + COLORS.reset;
+    std::string edge_h = COLORS.edge + "   " + COLORS.reset;
+    std::string edge_v = COLORS.edge + "  " + COLORS.reset;
     std::string background;
-    std::string foreground = COLORS.f_black;
+    std::string foreground = COLORS.b_fg;
 
     for (i = 0; i < 10; i++) {
         for (j = 0; j < 10; j++) {
@@ -64,7 +64,7 @@ void initializeWhiteBoard() {
                 continue;
             }
 
-            background = ((j+i)%2 == 0) ? COLORS.b_white : COLORS.b_black;
+            background = ((j+i)%2 == 0) ? COLORS.w_bg : COLORS.b_bg;
 
             if (i == 2 || i == 7) {setPiece(enum_pieces::PAWN);}
 
