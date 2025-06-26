@@ -1,13 +1,16 @@
 CXX = clang++
 CXXFLAGS = -std=c++20
-OBJ = build/ConfigReader.o build/ConfigData.o build/ConfigMap.o
+OBJ = build/main.o build/ConfigReader.o build/ConfigData.o build/ConfigMap.o
 
-build/main: src/main.cpp build/ ${OBJ}
-	@${CXX} ${CXXFLAGS} $< ${OBJ} -o $@
+build/main: build/ ${OBJ}
+	@${CXX} ${CXXFLAGS} ${OBJ} -o $@
 	@./$@
 
 build/:
 	@mkdir -p build
+
+build/main.o: src/main.cpp
+	@clang++ -c src/main.cpp -o build/main.o
 
 build/ConfigReader.o: src/ConfigReader.cpp
 	@clang++ -c src/ConfigReader.cpp -o build/ConfigReader.o
@@ -21,13 +24,16 @@ build/ConfigMap.o: src/ConfigMap.cpp
 # Here, we have litte make scripts we can use
 # 	.PHONY says, hey, this 'file' is always out of date, so always execute
 # 	what we have written in here
-.PHONY: clean test
+.PHONY: clean test run
 clean: 
 	@for i in build/*; do echo "  removing file $$i"; rm $$i; done
 
 test:
 	@${CXX} ${CXXFLAGS} test/test.cpp -o build/test
 	@./build/test
+
+run: build/ build/main
+	@./build/main
 
 # Notes
 # 	@ Before a command makes it silent, so you won't see what's ran
