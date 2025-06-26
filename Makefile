@@ -2,12 +2,12 @@ CXX = clang++
 CXXFLAGS = -std=c++20
 
 # Extremely cool .cpp to .o setup and recipes here for easier src additions
-SRC := ${shell find src/ -name "*.cpp"}
-OBJ := ${patsubst src/%.cpp, build/%.o, $(SRC)}
+SRC := ${shell find src/ -name '*.cpp'}
+OBJ := ${patsubst src/%.cpp,build/%.o,$(SRC)}
 
-bin/main: ${OBJ}
-	@mkdir -p $(dir $@)
-	@${CXX} ${CXXFLAGS} ${OBJ} -o $@
+all: ${OBJ}
+	@mkdir -p ./bin
+	@${CXX} ${CXXFLAGS} ${OBJ} -o ./bin/main
 
 build/%.o: src/%.cpp
 	@mkdir -p $(dir $@)
@@ -16,7 +16,7 @@ build/%.o: src/%.cpp
 # Here, we have litte make scripts we can use
 # 	.PHONY says, hey, this 'file' is always out of date, so always execute
 # 	what we have written in here
-.PHONY: clean test run
+.PHONY: all clean test run
 clean: 
 	@echo '    cleaning build/ and bin/ directories...'
 	@rm -rf build/ bin/
