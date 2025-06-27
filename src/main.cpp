@@ -30,14 +30,32 @@ enum class enum_pieces { PAWN = 1, KNIGHT, BISHOP, ROOK, QUEEN, KING };
 //ANSI rgb colors: b_=background, f_=foreground
 // Keep all actual colors same width for later indexing ease
 
-void setPiece(enum enum_pieces piece) {
-    switch (piece) {
-        case enum_pieces::PAWN: PIECE = PIECES.pawn; break;
-        case enum_pieces::ROOK: PIECE = PIECES.rook; break;
-        case enum_pieces::KNIGHT: PIECE = PIECES.knight; break;
-        case enum_pieces::BISHOP: PIECE = PIECES.bishop; break;
-        case enum_pieces::QUEEN: PIECE = PIECES.queen; break;
-        case enum_pieces::KING: PIECE = PIECES.king; break;
+void setPiece(int row, int column) {
+    switch (row) {
+        case 2: PIECE = PIECES.b_pawn; break;
+        case 7: PIECE = PIECES.w_pawn; break;
+        case 1: 
+            switch (column) {
+                case 2: PIECE = PIECES.b_knight; break;
+                case 6: PIECE = PIECES.b_knight; break;
+                case 1: PIECE = PIECES.b_rook; break;
+                case 7: PIECE = PIECES.b_rook; break;
+                case 3: PIECE = PIECES.b_bishop; break;
+                case 5: PIECE = PIECES.b_bishop; break;
+                case 4: PIECE = PIECES.b_queen; break;
+                default: PIECE = PIECES.b_king; break;
+            }; break;
+        case 8:
+            switch (column) {
+                case 2: PIECE = PIECES.w_knight; break;
+                case 6: PIECE = PIECES.w_knight; break;
+                case 1: PIECE = PIECES.w_rook; break;
+                case 7: PIECE = PIECES.w_rook; break;
+                case 3: PIECE = PIECES.w_bishop; break;
+                case 5: PIECE = PIECES.w_bishop; break;
+                case 4: PIECE = PIECES.w_queen; break;
+                default: PIECE = PIECES.w_king; break;
+            }; break;
     }
 }
 
@@ -67,15 +85,7 @@ void initializeWhiteBoard() {
 
             background = ((j+i)%2 == 0) ? COLORS.w_bg : COLORS.b_bg;
 
-            if (i == 2 || i == 7) {setPiece(enum_pieces::PAWN);}
-
-            if (i == 1 || i == 8) {
-                if (j == 2 || j == 6) {setPiece(enum_pieces::KNIGHT);}
-                else if (j == 1 || j == 7) {setPiece(enum_pieces::ROOK);}
-                else if (j == 3 || j == 5) {setPiece(enum_pieces::BISHOP);}
-                else if (j == 4) {setPiece(enum_pieces::QUEEN);}
-                else {setPiece(enum_pieces::KING);}
-            }
+            setPiece(i, j);
 
             // piece[0] = map(j);
 
@@ -87,10 +97,23 @@ void initializeWhiteBoard() {
     }
 }
 
-int main(int argc, char *argv[]) {
-    // Read in config file
-    ConfigReader();
+void commandLineArguments(int& argc, char *argv[]) {
+    for (int i = 1; i < argc; i++) {
+        std::string arg = argv[i];
+        switch (arg[1]) {
+            case 'v': OPTIONS.verbose = true; break; //verbose
+            case 'd': OPTIONS.dry_run = true; break; //defaults, so no config reading
+        }
+    }
+}
 
-    // Show boards
+int main(int argc, char *argv[]) {
+    // Before config file, direct chess command line options are applied
+    commandLineArguments(argc, argv);
+
+    // Read in config file, will overwrite any previous command line arguments
+    if (!OPTIONS.dry_run) {ConfigReader();}
+
+    // Show boards + start game
     initializeWhiteBoard();
 }

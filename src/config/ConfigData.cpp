@@ -13,15 +13,23 @@ ConfigData CONFIG = {
 
         .reset = "\x1B[0m",
     },
-    .PIECES {
-        .pawn = " \u2659 ",
-        .rook = " \u2656 ",
-        .knight = " \u2658 ",
-        .bishop = " \u2657 ",
-        .queen = " \u2655 ",
-        .king = " \u2654 ",
+    .PIECES { //TODO: add white or black unicode pieces
+        .b_pawn = " \u2659 ",
+        .b_rook = " \u2656 ",
+        .b_knight = " \u2658 ",
+        .b_bishop = " \u2657 ",
+        .b_queen = " \u2655 ",
+        .b_king = " \u2654 ",
+
+        .w_pawn = " \u2659 ",
+        .w_rook = " \u2656 ",
+        .w_knight = " \u2658 ",
+        .w_bishop = " \u2657 ",
+        .w_queen = " \u2655 ",
+        .w_king = " \u2654 ",
     },
     .OPTIONS {
         .verbose = false,
+        .dry_run = false,
     },
 };

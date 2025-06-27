@@ -7,26 +7,34 @@ namespace {
     struct Color {
         std::string edge;
 
-        std::string b_bg; //black_background
-        std::string b_fg;
+        std::string b_bg; //black_square_background
+        std::string b_fg; //black_pieces_foreground
 
-        std::string w_bg; //white_background
-        std::string w_fg;
+        std::string w_bg; //white_square_background
+        std::string w_fg; //white_pieces_foreground
 
         std::string reset;
     };
 
     struct Pieces {
-        std::string pawn;
-        std::string rook;
-        std::string knight;
-        std::string bishop;
-        std::string queen;
-        std::string king;
+        std::string b_pawn;
+        std::string b_rook;
+        std::string b_knight;
+        std::string b_bishop;
+        std::string b_queen;
+        std::string b_king;
+
+        std::string w_pawn;
+        std::string w_rook;
+        std::string w_knight;
+        std::string w_bishop;
+        std::string w_queen;
+        std::string w_king;
     };
 
     struct Options {
         bool verbose;
+        bool dry_run;
     };
 };
 

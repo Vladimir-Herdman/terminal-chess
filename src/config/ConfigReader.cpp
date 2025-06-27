@@ -24,7 +24,7 @@ ConfigReader::ConfigReader() {
         if (line.length() < 9) {continue;} // NOTE: As of now, expected minimum assertion size is 9 as in 'a=#bcdefg'
                                                 // but will probably be a bit larger, as no way config var one char size
         int equalsign_idx = this->cleanLine(line);
-        if (line.at(0) == '#' || line.at(0) == '\n' || line.at(0) == '\r') {continue;}
+        if (equalsign_idx == -1 || line.at(0) == '#' || line.at(0) == '\n' || line.at(0) == '\r') {continue;}
 
         std::string key = line.substr(0, equalsign_idx);
         std::string value = line.substr(equalsign_idx+1);
@@ -40,12 +40,11 @@ ConfigReader::ConfigReader() {
     }
     
     config_file.close();
-
-    exit(0); //REMOVE
 }
 
 int ConfigReader::cleanLine(std::string& line) {
     line.erase(std::remove(line.begin(), line.end(), ' '), line.end());
+    if (line.length() == 0) {return -1;}
 
     size_t equal_spot = line.find('=', 0);
     if (equal_spot != std::string::npos) {
