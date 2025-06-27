@@ -29,3 +29,6 @@ test
 *.so.*
 *.dll
 *.dylib
+
+# Personal
+.clangd
