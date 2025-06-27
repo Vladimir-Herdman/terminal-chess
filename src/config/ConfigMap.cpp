@@ -1,3 +1,4 @@
+#include <format>
 #include <iostream>
 #include <string>
 #include "ConfigMap.h"
@@ -8,10 +9,20 @@ namespace {
 
     // Convert hex color code to ANSI escape sequence color code
     void hex_color_code(std::string& value) {
-        int r = std::stoi(value.substr(0, 2), nullptr, 16);
-        int g = std::stoi(value.substr(2, 2), nullptr, 16);
-        int b = std::stoi(value.substr(4, 2), nullptr, 16);
-        std::cout << "color codes from hex value are r=" << r << ", g=" << g << ", b=" << b << '\n';
+        std::string final = "";
+        for (int i = 0; i < 5; i+=2) {
+            int color_num = std::stoi(value.substr(i, 2), nullptr, 16);
+            final += ';' + std::format("{:03d}", color_num);
+        }
+        value = final;
+        if (CONFIG.OPTIONS.verbose) {
+            std::cout << "color codes from hex value are r="
+                << final.substr(0, 3)
+                << ", g=" << final.substr(4, 3)
+                << ", b=" << final.substr(8, 3)
+                << '\n';
+        }
+        
     }
 
     // Convert rgb color code to ANSI escape sequence color code
@@ -31,7 +42,7 @@ namespace {
 
     void board_edge(std::string& value) {std::cout << "Setting board edge color" << std::endl;}
 
-    void b_bg(std::string& value) {clean_color(value); CONFIG.COLORS.b_bg = value;}
+    void b_bg(std::string& value) {clean_color(value); CONFIG.COLORS.b_bg = "\x1B[48;2" + value + 'm';}
     void b_fg(std::string& value) {clean_color(value); CONFIG.COLORS.b_fg = value;}
 
     void b_pawn(std::string& value) {std::cout << "Test worked" << '\n';}

@@ -22,6 +22,7 @@
 
 auto& PIECES = CONFIG.PIECES;
 auto& COLORS = CONFIG.COLORS;
+auto& OPTIONS = CONFIG.OPTIONS;
 
 std::string PIECE = "   ";
 enum class enum_pieces { PAWN = 1, KNIGHT, BISHOP, ROOK, QUEEN, KING };

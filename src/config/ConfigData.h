@@ -7,10 +7,10 @@ namespace {
     struct Color {
         std::string edge;
 
-        std::string b_bg;
+        std::string b_bg; //black_background
         std::string b_fg;
 
-        std::string w_bg;
+        std::string w_bg; //white_background
         std::string w_fg;
 
         std::string reset;
@@ -24,11 +24,16 @@ namespace {
         std::string queen;
         std::string king;
     };
+
+    struct Options {
+        bool verbose;
+    };
 };
 
 struct ConfigData {
     Color COLORS;
     Pieces PIECES;
+    Options OPTIONS;
 };
 extern ConfigData CONFIG;
 

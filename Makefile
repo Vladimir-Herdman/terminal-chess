@@ -2,6 +2,7 @@ CXX = clang++
 CXXFLAGS = -std=c++20
 
 # Extremely cool .cpp to .o setup and recipes here for easier src additions
+# Great resource over Makefiles: https://makefiletutorial.com/#getting-started
 SRC := ${shell find src/ -name '*.cpp'}
 OBJ := ${patsubst src/%.cpp,build/%.o,$(SRC)}
 
@@ -19,7 +20,7 @@ build/%.o: src/%.cpp
 .PHONY: all clean test run
 clean: 
 	@echo '    cleaning build/ and bin/ directories...'
-	@rm -rf build/ bin/
+	@rm -r build/ bin/
 
 test:
 	@${CXX} ${CXXFLAGS} test/test.cpp -o bin/test

@@ -21,4 +21,7 @@ ConfigData CONFIG = {
         .queen = " \u2655 ",
         .king = " \u2654 ",
     },
+    .OPTIONS {
+        .verbose = false,
+    },
 };
