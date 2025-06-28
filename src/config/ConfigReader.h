@@ -1,6 +1,7 @@
 #ifndef TERMINAL_CHESS_CONFIGREADER_H
 #define TERMINAL_CHESS_CONFIGREADER_H
 
+#include <fstream>
 #include <string>
 
 class ConfigReader {
@@ -11,6 +12,7 @@ public:
 private:
     // will clean line, and return where '=' sign at if found
     int cleanLine(std::string& line);
+    std::string getConfigFile();
 };
 
 #endif //TERMINAL_CHESS_CONFIGREADER_H

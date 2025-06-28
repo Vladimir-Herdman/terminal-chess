@@ -26,7 +26,7 @@ test:
 	@${CXX} ${CXXFLAGS} test/test.cpp -o bin/test
 	@./bin/test
 
-run:
+run: all
 	@./bin/main
 
 # Notes

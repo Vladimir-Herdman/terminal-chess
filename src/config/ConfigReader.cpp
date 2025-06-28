@@ -1,18 +1,18 @@
 //TODO
     // Better config file locations depending on OS
     // OS independent pathing
-#include <cstdlib> //REMOVE
+#include <cstdlib>
 #include <algorithm>
+#include <filesystem>
 #include <fstream>
 #include <iostream> //REMOVE
 #include <string>
 #include "ConfigReader.h"
 #include "ConfigMap.h"
 
-// Unnamed namespace in place of static so it can apply to type declaration as well
 ConfigReader::ConfigReader() {
     std::string line;
-    std::ifstream config_file("/home/vova/Code/terminal-chess/example_config/chess.conf");
+    std::ifstream config_file(this->getConfigFile());
 
     if (!config_file.is_open()) { 
         std::cerr << "config file not found" << '\n';
@@ -55,4 +55,35 @@ int ConfigReader::cleanLine(std::string& line) {
         return equal_spot;
     }
     return -1;
+}
+
+std::string ConfigReader::getConfigFile() {
+    // different paths to check on OS
+    #if defined(_WIN32)
+        std::string appdata = "";
+
+        if (std::getenv("APPDATA") != nullptr) {appdata = std::string(std::getenv("APPDATA")) + "\\chess.conf";}
+        std::string config_locations[] = {
+            appdata,
+            std::filesystem::current_path().string() + "\\example_config\\chess.conf",
+        };
+    #else
+        std::string home = "";
+        std::string xdg_home = "";
+
+        if (std::getenv("HOME") != nullptr) {home = std::string(std::getenv("HOME")) + "/.config/chess.conf";}
+        if (std::getenv("XDG_CONFIG_HOME") != nullptr) {xdg_home = std::string(std::getenv("XDG_CONFIG_HOME")) + "/.config/chess.conf";}
+
+        std::string config_locations[] = {
+            home,
+            xdg_home,
+            std::filesystem::current_path().string() + "/example_config/chess.conf",
+        };
+    #endif
+
+    for (const std::string& path : config_locations) {
+        std::ifstream config_file(path);
+        if (config_file.is_open()) {return path;}
+    }
+    return "";
 }
