@@ -1,7 +1,6 @@
 #ifndef TERMINAL_CHESS_CONFIGREADER_H
 #define TERMINAL_CHESS_CONFIGREADER_H
 
-#include <fstream>
 #include <string>
 
 class ConfigReader {

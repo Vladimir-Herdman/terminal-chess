@@ -4,7 +4,6 @@
         // Turn on / off a lot of settings, like highlight move, abc123 row/cols
     // Break apart some sections so more readable
     // Seperate code into other header and source files for logic based main.cpp
-    // Learn cmake for better make file setup for others and deviceas
     // Command line arguments
         // Start from black side
         // Show both sides at once
@@ -20,9 +19,9 @@
 //ESC[0m - \x1B[0m - reset all modes styles and colors
 //(165, 42, 42
 
-auto& PIECES = CONFIG.PIECES;
-auto& COLORS = CONFIG.COLORS;
-auto& OPTIONS = CONFIG.OPTIONS;
+auto& PIECES = CONFIG::PIECES;
+auto& COLORS = CONFIG::COLORS;
+auto& OPTIONS = CONFIG::OPTIONS;
 
 std::string PIECE = "   ";
 enum class enum_pieces { PAWN = 1, KNIGHT, BISHOP, ROOK, QUEEN, KING };
@@ -37,22 +36,22 @@ void setPiece(int row, int column) {
         case 1: 
             switch (column) {
                 case 2: PIECE = PIECES.b_knight; break;
-                case 6: PIECE = PIECES.b_knight; break;
+                case 7: PIECE = PIECES.b_knight; break;
                 case 1: PIECE = PIECES.b_rook; break;
-                case 7: PIECE = PIECES.b_rook; break;
+                case 8: PIECE = PIECES.b_rook; break;
                 case 3: PIECE = PIECES.b_bishop; break;
-                case 5: PIECE = PIECES.b_bishop; break;
+                case 6: PIECE = PIECES.b_bishop; break;
                 case 4: PIECE = PIECES.b_queen; break;
                 default: PIECE = PIECES.b_king; break;
             }; break;
         case 8:
             switch (column) {
                 case 2: PIECE = PIECES.w_knight; break;
-                case 6: PIECE = PIECES.w_knight; break;
+                case 7: PIECE = PIECES.w_knight; break;
                 case 1: PIECE = PIECES.w_rook; break;
-                case 7: PIECE = PIECES.w_rook; break;
+                case 8: PIECE = PIECES.w_rook; break;
                 case 3: PIECE = PIECES.w_bishop; break;
-                case 5: PIECE = PIECES.w_bishop; break;
+                case 6: PIECE = PIECES.w_bishop; break;
                 case 4: PIECE = PIECES.w_queen; break;
                 default: PIECE = PIECES.w_king; break;
             }; break;

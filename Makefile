@@ -10,9 +10,12 @@ all: ${OBJ}
 	@mkdir -p ./bin
 	@${CXX} ${CXXFLAGS} ${OBJ} -o ./bin/main
 
+# Use different compilers throughout to make sure of less errors, so switch g++
+# every once in a while
 build/%.o: src/%.cpp
 	@mkdir -p $(dir $@)
-	@${CXX} ${CXXFLAGS} -c $< -o $@
+#@${CXX} ${CXXFLAGS} -c $< -o $@
+	@g++ ${CXXFLAGS} -c $< -o $@
 
 # Here, we have litte make scripts we can use
 # 	.PHONY says, hey, this 'file' is always out of date, so always execute
@@ -28,6 +31,10 @@ test:
 
 run: all
 	@./bin/main
+
+gpp: ${OBJ}
+	@mkdir -p ./bin
+	@g++ ${CXXFLAGS} ${OBJ} -o ./bin/main
 
 # Notes
 # 	@ Before a command makes it silent, so you won't see what's ran

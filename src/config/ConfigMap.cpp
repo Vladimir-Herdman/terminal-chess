@@ -1,13 +1,20 @@
 #include <algorithm>
+#include <cstdlib>
+#include <cwchar>
 #include <format>
 #include <iostream>
 #include <string>
+
 #include "ConfigMap.h"
 #include "ConfigData.h"
 
-namespace {
-    // Helper functions
 
+namespace {
+    // using declarations
+    using ptr_configFunction = void (*)(std::string&);
+    using ConfigMap = std::map<std::string, ptr_configFunction>;
+
+    // Helper functions
     // Convert hex color code to ANSI escape sequence color code
     void hex_color_code(std::string& value) {
         std::string final = "";
@@ -17,7 +24,7 @@ namespace {
         }
         value = final;
 
-        if (CONFIG.OPTIONS.verbose) {
+        if (CONFIG::OPTIONS.verbose) {
             std::cout << "   Color codes from hex value are r="
                 << final.substr(1, 3)
                 << ", g=" << final.substr(5, 3)
@@ -35,7 +42,7 @@ namespace {
         }
         value = final;
 
-        if (CONFIG.OPTIONS.verbose) {
+        if (CONFIG::OPTIONS.verbose) {
             std::cout << "   RGB color is " << value << '\n';
         }
     }
@@ -51,38 +58,39 @@ namespace {
     }
 
     void clean_piece(std::string& value) {
+        std::setlocale(LC_ALL, "en_US.UTF-8");
         value.erase(std::remove(value.begin(), value.end(), '\''), value.end());
         value.erase(std::remove(value.begin(), value.end(), '"'), value.end());
         value = " " + value + " ";
 
-        if (CONFIG.OPTIONS.verbose) {
+        if (CONFIG::OPTIONS.verbose) {
             std::cout << "Piece passed is:" << value << '\n';
         }
     }
 
     // Mapped functions
 
-    void board_edge(std::string& value) {std::cout << "Setting board edge color" << std::endl;}
+    void board_edge(std::string& value) {clean_color(value); CONFIG::COLORS.edge = "\x1B[48;2" + value + 'm';}
 
-    void b_bg(std::string& value) {clean_color(value); CONFIG.COLORS.b_bg = "\x1B[48;2" + value + 'm';}
-    void b_fg(std::string& value) {clean_color(value); CONFIG.COLORS.b_fg = "\x1B[38;2" + value + 'm';}
+    void b_bg(std::string& value) {clean_color(value); CONFIG::COLORS.b_bg = "\x1B[48;2" + value + 'm';}
+    void b_fg(std::string& value) {clean_color(value); CONFIG::COLORS.b_fg = "\x1B[38;2" + value + 'm';}
 
-    void b_pawn(std::string& value) {clean_piece(value); CONFIG.PIECES.b_pawn = value;}
-    void b_rook(std::string& value) {clean_piece(value); CONFIG.PIECES.b_rook = value;}
-    void b_knight(std::string& value) {clean_piece(value); CONFIG.PIECES.b_knight = value;}
-    void b_bishop(std::string& value) {clean_piece(value); CONFIG.PIECES.b_bishop = value;}
-    void b_queen(std::string& value) {clean_piece(value); CONFIG.PIECES.b_queen = value;}
-    void b_king(std::string& value) {clean_piece(value); CONFIG.PIECES.b_king = value;}
+    void b_pawn(std::string& value) {clean_piece(value); CONFIG::PIECES.b_pawn = value;}
+    void b_rook(std::string& value) {clean_piece(value); CONFIG::PIECES.b_rook = value;}
+    void b_knight(std::string& value) {clean_piece(value); CONFIG::PIECES.b_knight = value;}
+    void b_bishop(std::string& value) {clean_piece(value); CONFIG::PIECES.b_bishop = value;}
+    void b_queen(std::string& value) {clean_piece(value); CONFIG::PIECES.b_queen = value;}
+    void b_king(std::string& value) {clean_piece(value); CONFIG::PIECES.b_king = value;}
 
-    void w_bg(std::string& value) {clean_color(value); CONFIG.COLORS.w_bg = "\x1B[48;2" + value + 'm';}
-    void w_fg(std::string& value) {clean_color(value); CONFIG.COLORS.w_fg = "\x1B[38;2" + value + 'm';}
+    void w_bg(std::string& value) {clean_color(value); CONFIG::COLORS.w_bg = "\x1B[48;2" + value + 'm';}
+    void w_fg(std::string& value) {clean_color(value); CONFIG::COLORS.w_fg = "\x1B[38;2" + value + 'm';}
 
-    void w_pawn(std::string& value) {clean_piece(value); CONFIG.PIECES.w_pawn = value;}
-    void w_rook(std::string& value) {clean_piece(value); CONFIG.PIECES.w_rook = value;}
-    void w_knight(std::string& value) {clean_piece(value); CONFIG.PIECES.w_knight = value;}
-    void w_bishop(std::string& value) {clean_piece(value); CONFIG.PIECES.w_bishop = value;}
-    void w_queen(std::string& value) {clean_piece(value); CONFIG.PIECES.w_queen = value;}
-    void w_king(std::string& value) {clean_piece(value); CONFIG.PIECES.w_king = value;}
+    void w_pawn(std::string& value) {clean_piece(value); CONFIG::PIECES.w_pawn = value;}
+    void w_rook(std::string& value) {clean_piece(value); CONFIG::PIECES.w_rook = value;}
+    void w_knight(std::string& value) {clean_piece(value); CONFIG::PIECES.w_knight = value;}
+    void w_bishop(std::string& value) {clean_piece(value); CONFIG::PIECES.w_bishop = value;}
+    void w_queen(std::string& value) {clean_piece(value); CONFIG::PIECES.w_queen = value;}
+    void w_king(std::string& value) {clean_piece(value); CONFIG::PIECES.w_king = value;}
 }
 
 ConfigMap config_map = {

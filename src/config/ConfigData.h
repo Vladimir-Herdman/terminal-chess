@@ -3,7 +3,7 @@
 
 #include <string>
 
-namespace {
+namespace CONFIG {
     struct Color {
         std::string edge;
 
@@ -36,13 +36,10 @@ namespace {
         bool verbose;
         bool dry_run;
     };
-};
 
-struct ConfigData {
-    Color COLORS;
-    Pieces PIECES;
-    Options OPTIONS;
+    extern Color COLORS;
+    extern Pieces PIECES;
+    extern Options OPTIONS;
 };
-extern ConfigData CONFIG;
 
 #endif //TERMINALCHESS_CONFIGDATA_H

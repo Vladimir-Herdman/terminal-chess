@@ -4,8 +4,6 @@
 #include <string>
 #include <map>
 
-using ptr_configFunction = void (*)(std::string&);
-using ConfigMap = std::map<std::string, ptr_configFunction>;
-extern ConfigMap config_map;
+extern std::map<std::string, void (*)(std::string&)> config_map;
 
 #endif //TERMINALCHESS_CONFIGMAP_G
