@@ -1,4 +1,4 @@
-#include "ConfigData.h"
+#include "ConfigData.hpp"
 
 // Define defaults here in case of no config file
 namespace CONFIG {
@@ -9,7 +9,7 @@ namespace CONFIG {
         .b_fg = "\x1B[38;2;000;000;000m",
 
         .w_bg = "\x1B[48;2;235;236;208m",
-        .w_fg = "\x1B[48;2;234;233;230m", // TODO: Figure out white foregrouds
+        .w_fg = "\x1B[38;2;100;100;100m", // TODO: Figure out white foregrouds
 
         .reset = "\x1B[0m",
     };

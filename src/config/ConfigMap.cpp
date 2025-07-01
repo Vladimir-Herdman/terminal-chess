@@ -5,8 +5,8 @@
 #include <iostream>
 #include <string>
 
-#include "ConfigMap.h"
-#include "ConfigData.h"
+#include "ConfigMap.hpp"
+#include "ConfigData.hpp"
 
 
 namespace {

@@ -1,5 +1,5 @@
 CXX = clang++
-CXXFLAGS = -std=c++20
+CXXFLAGS = -std=c++20 -Isrc
 
 # Extremely cool .cpp to .o setup and recipes here for easier src additions
 # Great resource over Makefiles: https://makefiletutorial.com/#getting-started
@@ -14,8 +14,8 @@ all: ${OBJ}
 # every once in a while
 build/%.o: src/%.cpp
 	@mkdir -p $(dir $@)
-#@${CXX} ${CXXFLAGS} -c $< -o $@
-	@g++ ${CXXFLAGS} -c $< -o $@
+	@${CXX} ${CXXFLAGS} -c $< -o $@
+#@g++ ${CXXFLAGS} -c $< -o $@
 
 # Here, we have litte make scripts we can use
 # 	.PHONY says, hey, this 'file' is always out of date, so always execute

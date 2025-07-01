@@ -32,3 +32,4 @@ test
 
 # Personal
 .clangd
+compile_flags.txt

@@ -1,15 +1,12 @@
-//TODO
-    // Better config file locations depending on OS
-    // OS independent pathing
 #include <cstdlib>
 #include <algorithm>
 #include <filesystem>
 #include <fstream>
-#include <iostream> //REMOVE
+#include <iostream>
 #include <string>
 
-#include "ConfigReader.h"
-#include "ConfigMap.h"
+#include "ConfigReader.hpp"
+#include "ConfigMap.hpp"
 
 ConfigReader::ConfigReader() {
     std::string line;
