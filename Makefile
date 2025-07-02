@@ -1,5 +1,6 @@
 CXX = clang++
 CXXFLAGS = -std=c++20 -Isrc
+CXXPREDEFS = -DTERMINALCHESS_INCLUDE_CONFIGREADER -DDEV_HELPERS_LATER_REMOVE
 
 # Extremely cool .cpp to .o setup and recipes here for easier src additions
 # Great resource over Makefiles: https://makefiletutorial.com/#getting-started
@@ -8,13 +9,13 @@ OBJ := ${patsubst src/%.cpp,build/%.o,$(SRC)}
 
 all: ${OBJ}
 	@mkdir -p ./bin
-	@${CXX} ${CXXFLAGS} ${OBJ} -o ./bin/main
+	@${CXX} ${CXXFLAGS} ${CXXPREDEFS} ${OBJ} -o ./bin/main
 
 # Use different compilers throughout to make sure of less errors, so switch g++
 # every once in a while
 build/%.o: src/%.cpp
 	@mkdir -p $(dir $@)
-	@${CXX} ${CXXFLAGS} -c $< -o $@
+	@${CXX} ${CXXFLAGS} ${CXXPREDEFS} -c $< -o $@
 #@g++ ${CXXFLAGS} -c $< -o $@
 
 # Here, we have litte make scripts we can use

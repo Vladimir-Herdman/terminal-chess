@@ -3,20 +3,30 @@
 
 #include "config/ConfigData.hpp"
 #include "game/logic/bit_boards.hpp"
-
-class Game {
-    public:
-        Game() {
-
-        }
-
-    private:
-};
+#include "game/ui.hpp"
 
 namespace {
     auto& PIECES = CONFIG::PIECES;
     auto& COLORS = CONFIG::COLORS;
 }
+
+// Publics
+Game::Game() {
+    
+}
+
+void Game::beginMatch() {
+    std::string board_presentation = this->m_generateBoard();
+}
+
+// Private helpers
+std::string Game::m_generateBoard() {
+    std::string board_to_print;
+    
+    return board_to_print;
+}
+
+// Original main code for running
 
 std::string PIECE = "   ";
 enum class enum_pieces { PAWN = 1, KNIGHT, BISHOP, ROOK, QUEEN, KING };

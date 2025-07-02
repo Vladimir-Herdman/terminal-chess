@@ -7,9 +7,12 @@
     // Command line arguments
         // Start from black side
         // Show both sides at once
-#include "config/ConfigReader.hpp"
+#ifdef TERMINALCHESS_INCLUDE_CONFIGREADER
+    #include "config/ConfigReader.hpp"
+#endif
 #include "config/ConfigData.hpp"
 #include "game/ui.hpp"
+#include "game/logic/bit_boards.hpp" //REMOVE
 
 auto& OPTIONS = CONFIG::OPTIONS;
 
@@ -28,9 +31,15 @@ int main(int argc, char *argv[]) {
     commandLineArguments(argc, argv);
 
     // Read in config file, will overwrite any previous command line arguments
-    if (!OPTIONS.dry_run) {ConfigReader();}
+    #ifdef TERMINALCHESS_INCLUDE_CONFIGREADER
+        if (!OPTIONS.dry_run) {ConfigReader();}
+    #endif
 
     // Show boards + start game
     //initializeWhiteBoard();
-    initializeWhiteBoard();
+    //Game().beginMatch();
+
+    bitboardDevFunc();
+
+    return 0;
 }
