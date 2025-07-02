@@ -9,4 +9,6 @@ public:
     Game();
 };
 
+void initializeWhiteBoard();
+
 #endif //TERMINALCHESS_UI_H
