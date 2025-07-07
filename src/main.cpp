@@ -7,11 +7,11 @@
     // Command line arguments
         // Start from black side
         // Show both sides at once
+#include "game/ui.hpp"
 #ifdef TERMINALCHESS_INCLUDE_CONFIGREADER
     #include "config/ConfigReader.hpp"
 #endif
 #include "config/ConfigData.hpp"
-#include "game/ui.hpp"
 #include "game/logic/bit_boards.hpp" //REMOVE
 
 auto& OPTIONS = CONFIG::OPTIONS;
@@ -36,10 +36,10 @@ int main(int argc, char *argv[]) {
     #endif
 
     // Show boards + start game
-    //initializeWhiteBoard();
+    initializeWhiteBoard();
     //Game().beginMatch();
 
-    bitboardDevFunc();
+    //bitboardDevFunc();
 
     return 0;
 }

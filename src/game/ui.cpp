@@ -1,63 +1,69 @@
+#include <cstdint>
 #include <iostream>
 #include <string>
 
 #include "config/ConfigData.hpp"
-#include "game/logic/bit_boards.hpp"
-#include "game/ui.hpp"
+#include "ui.hpp"
 
-namespace {
-    auto& PIECES = CONFIG::PIECES;
-    auto& COLORS = CONFIG::COLORS;
-}
+using U64 = std::uint64_t;
 
-// Publics
-Game::Game() {
-    
-}
-
-void Game::beginMatch() {
-    std::string board_presentation = this->m_generateBoard();
-}
-
-// Private helpers
-std::string Game::m_generateBoard() {
-    std::string board_to_print;
-    
-    return board_to_print;
-}
-
-// Original main code for running
+auto& COLORS = CONFIG::COLORS;
+auto& PIECES = CONFIG::PIECES;
 
 std::string PIECE = "   ";
-enum class enum_pieces { PAWN = 1, KNIGHT, BISHOP, ROOK, QUEEN, KING };
+enum class ui_piece {
+    B_PAWN, B_KNIGHT, B_BISHOP, B_ROOK, B_QUEEN, B_KING,
+    W_PAWN, W_KNIGHT, W_BISHOP, W_ROOK, W_QUEEN, W_KING,
+    SPACE
+};
+
+ui_piece board[8][8] = {
+    {ui_piece::B_ROOK, ui_piece::B_KNIGHT, ui_piece::B_BISHOP, ui_piece::B_QUEEN, ui_piece::B_KING, ui_piece::B_BISHOP, ui_piece::B_KNIGHT, ui_piece::B_ROOK},
+    {ui_piece::B_PAWN, ui_piece::B_PAWN, ui_piece::B_PAWN, ui_piece::B_PAWN, ui_piece::B_PAWN, ui_piece::B_PAWN, ui_piece::B_PAWN, ui_piece::B_PAWN}, 
+    {ui_piece::SPACE, ui_piece::SPACE, ui_piece::SPACE, ui_piece::SPACE, ui_piece::SPACE, ui_piece::SPACE, ui_piece::SPACE, ui_piece::SPACE}, 
+    {ui_piece::SPACE, ui_piece::SPACE, ui_piece::SPACE, ui_piece::SPACE, ui_piece::SPACE, ui_piece::SPACE, ui_piece::SPACE, ui_piece::SPACE}, 
+    {ui_piece::SPACE, ui_piece::SPACE, ui_piece::SPACE, ui_piece::SPACE, ui_piece::SPACE, ui_piece::SPACE, ui_piece::SPACE, ui_piece::SPACE}, 
+    {ui_piece::SPACE, ui_piece::SPACE, ui_piece::SPACE, ui_piece::SPACE, ui_piece::SPACE, ui_piece::SPACE, ui_piece::SPACE, ui_piece::SPACE}, 
+    {ui_piece::W_PAWN, ui_piece::W_PAWN, ui_piece::W_PAWN, ui_piece::W_PAWN, ui_piece::W_PAWN, ui_piece::W_PAWN, ui_piece::W_PAWN, ui_piece::W_PAWN}, 
+    {ui_piece::W_ROOK, ui_piece::W_KNIGHT, ui_piece::W_BISHOP, ui_piece::W_QUEEN, ui_piece::W_KING, ui_piece::W_BISHOP, ui_piece::W_KNIGHT, ui_piece::W_ROOK}
+};
+
+std::string ui_lookup[13] = {
+    PIECES.b_pawn, PIECES.b_knight, PIECES.b_bishop, PIECES.b_rook, PIECES.b_queen, PIECES.b_king,
+    PIECES.w_pawn, PIECES.w_knight, PIECES.w_bishop, PIECES.w_rook, PIECES.w_queen, PIECES.w_king,
+    "   "
+};
 
 void setPiece(int row, int column) {
-    switch (row) {
-        case 2: PIECE = PIECES.b_pawn; break;
-        case 7: PIECE = PIECES.w_pawn; break;
-        case 1: 
-            switch (column) {
-                case 2: PIECE = PIECES.b_knight; break;
-                case 7: PIECE = PIECES.b_knight; break;
-                case 1: PIECE = PIECES.b_rook; break;
-                case 8: PIECE = PIECES.b_rook; break;
-                case 3: PIECE = PIECES.b_bishop; break;
-                case 6: PIECE = PIECES.b_bishop; break;
-                case 4: PIECE = PIECES.b_queen; break;
-                default: PIECE = PIECES.b_king; break;
-            }; break;
-        case 8:
-            switch (column) {
-                case 2: PIECE = PIECES.w_knight; break;
-                case 7: PIECE = PIECES.w_knight; break;
-                case 1: PIECE = PIECES.w_rook; break;
-                case 8: PIECE = PIECES.w_rook; break;
-                case 3: PIECE = PIECES.w_bishop; break;
-                case 6: PIECE = PIECES.w_bishop; break;
-                case 4: PIECE = PIECES.w_queen; break;
-                default: PIECE = PIECES.w_king; break;
-            }; break;
-    }
+    PIECE = ui_lookup[static_cast<int>(board[row-1][column-1])];
+
+    // Old logic (just prints a board, no connection to bitboards)
+    //switch (row) {
+    //    case 2: PIECE = PIECES.b_pawn; break;
+    //    case 7: PIECE = PIECES.w_pawn; break;
+    //    case 1: 
+    //        switch (column) {
+    //            case 2: PIECE = PIECES.b_knight; break;
+    //            case 7: PIECE = PIECES.b_knight; break;
+    //            case 1: PIECE = PIECES.b_rook; break;
+    //            case 8: PIECE = PIECES.b_rook; break;
+    //            case 3: PIECE = PIECES.b_bishop; break;
+    //            case 6: PIECE = PIECES.b_bishop; break;
+    //            case 4: PIECE = PIECES.b_queen; break;
+    //            default: PIECE = PIECES.b_king; break;
+    //        }; break;
+    //    case 8:
+    //        switch (column) {
+    //            case 2: PIECE = PIECES.w_knight; break;
+    //            case 7: PIECE = PIECES.w_knight; break;
+    //            case 1: PIECE = PIECES.w_rook; break;
+    //            case 8: PIECE = PIECES.w_rook; break;
+    //            case 3: PIECE = PIECES.w_bishop; break;
+    //            case 6: PIECE = PIECES.w_bishop; break;
+    //            case 4: PIECE = PIECES.w_queen; break;
+    //            default: PIECE = PIECES.w_king; break;
+    //        }; break;
+    //}
 }
 
 void initializeWhiteBoard() {

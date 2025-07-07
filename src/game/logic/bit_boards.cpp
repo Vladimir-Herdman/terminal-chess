@@ -15,28 +15,10 @@ namespace {
 
     constexpr U64 RANK_1 = 0x00000000000000FFULL;
     constexpr U64 RANK_8 = 0xFF00000000000000ULL;
-
-    //Functions
-    constexpr U64 leftShift(const U64 b) {return b << 1;}
-    U64 getSidePieces(BITBOARDS::Side side) {
-        return side.pawns | side.bishops | side.knights | side.king | side.queens | side.rooks;
-    }
-    
-    constexpr U64 kingMoves(U64 piece) {
-        return  ((piece << 1) & (~FILE_H)    | (piece >> 1) & (~FILE_A)  |
-                 (piece << 8)                | (piece >> 8)              |
-                 (piece << 7) & (~FILE_A)    | (piece >> 7) & (~FILE_H)  |
-                 (piece << 9) & (~FILE_H)    | (piece >> 9) & (~FILE_A)) & (~getSidePieces(BITBOARDS::white));
-    }
-    constexpr U64 knightMoves(U64 piece) {
-        return  ((((piece >> 6)  | (piece << 10)) & ~FILE_GH) |
-                 (((piece >> 10) | (piece << 6))  & ~FILE_AB) |
-                 (((piece >> 15) | (piece << 17)) & ~FILE_H)  |
-                 (((piece >> 17) | (piece << 15)) & ~FILE_A)) & (~getSidePieces(BITBOARDS::white));
-    }
 }
 
 namespace BITBOARDS {
+    // Individual sides
     Side white {
         .pawns   = 0x000000000000FF00ULL,
         .rooks   = 0x0000000000000081ULL,
@@ -46,11 +28,35 @@ namespace BITBOARDS {
         .king    = 0x0000000000000008ULL,
     };
     Side black {
-
+        .pawns   = 0x00FF000000000000ULL,
+        .rooks   = 0x8100000000000000ULL,
+        .knights = 0x4200000000000000ULL,
+        .bishops = 0x2400000000000000ULL,
+        .queens  = 0x1000000000000000ULL,
+        .king    = 0x0800000000000000ULL,
     };
+
+    // Side member functions
+    U64 Side::getAllPieces() {
+        return pawns | bishops | knights | king | queens | rooks;
+    }
+    constexpr U64 Side::getKnightMoves() {
+        return  ((((knights >> 6)  | (knights << 10)) & ~FILE_GH) |
+                 (((knights >> 10) | (knights << 6))  & ~FILE_AB) |
+                 (((knights >> 15) | (knights << 17)) & ~FILE_H)  |
+                 (((knights >> 17) | (knights << 15)) & ~FILE_A)) & (~getAllPieces());
+    }
+    constexpr U64 Side::getKingMoves() {
+        return  ((king << 1) & (~FILE_H) | (king >> 1) & (~FILE_A)  |
+                 (king << 8)             | (king >> 8)              |
+                 (king << 7) & (~FILE_A) | (king >> 7) & (~FILE_H)  |
+                 (king << 9) & (~FILE_H) | (king >> 9) & (~FILE_A)) & (~getAllPieces());
+    }
 }
 
 #ifdef DEV_HELPERS_LATER_REMOVE
+constexpr U64 leftShift(const U64 b) {return b << 1;}
+
 void printBitBoard(U64 num) {
     for (int i = 0; i < 64; i++) {
         // Check first digit of num and print out, move on to next
@@ -65,17 +71,10 @@ void printBitBoard(U64 num) {
 }
 
 void bitboardDevFunc() {
-    U64 whiteSide = 
-        BITBOARDS::white.pawns |
-        BITBOARDS::white.rooks |
-        BITBOARDS::white.knights |
-        BITBOARDS::white.bishops |
-        BITBOARDS::white.queens |
-        BITBOARDS::white.king;
     //printBitBoard(whiteSide);
     //constexpr U64 king = 0x0000000008000000ULL;
     //printBitBoard(kingMoves(king));
-    U64 piece = 0x0000000002000000ULL;
-    printBitBoard(knightMoves(piece));
+    //printBitBoard(BITBOARDS::black.getKnightMoves());
+    printBitBoard(BITBOARDS::white.rooks);
 }
 #endif
