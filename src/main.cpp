@@ -36,10 +36,10 @@ int main(int argc, char *argv[]) {
     #endif
 
     // Show boards + start game
-    initializeWhiteBoard();
+    //initializeWhiteBoard();
     //Game().beginMatch();
 
-    //bitboardDevFunc();
+    bitboardDevFunc();
 
     return 0;
 }

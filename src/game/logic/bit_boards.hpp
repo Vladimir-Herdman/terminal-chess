@@ -11,14 +11,18 @@ namespace BITBOARDS {
         uint64_t bishops;
         uint64_t queens;
         uint64_t king;
+        Side& opposing;
 
         uint64_t getAllPieces();
         constexpr uint64_t getKnightMoves();
         constexpr uint64_t getKingMoves();
+        constexpr uint64_t reverseBoard(uint64_t board);
+        // Generate moves for ray mask based on sliding piece index
+        constexpr uint64_t slidingMoves(const int piece_index, const uint64_t mask);
     };
 
     extern Side white;
-    extern Side BlackSide;
+    extern Side black;
 }
 
 #ifdef DEV_HELPERS_LATER_REMOVE
