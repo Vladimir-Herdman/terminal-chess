@@ -7,7 +7,6 @@
     // Command line arguments
         // Start from black side
         // Show both sides at once
-#include "game/ui.hpp"
 #ifdef TERMINALCHESS_INCLUDE_CONFIGREADER
     #include "config/ConfigReader.hpp"
 #endif
