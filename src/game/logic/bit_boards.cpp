@@ -23,6 +23,14 @@ namespace {
     constexpr U64 RANK_1 = 0x00000000000000FFull;
     constexpr U64 RANK_8 = 0xFF00000000000000ull;
 
+    constexpr U64 DIAGONAL = 0x0102040810204080ull;
+    constexpr U64 DIAGONAL_MASK_EAST = 0x0102040810204080ull; //REMOVE?
+    constexpr U64 DIAGONAL_MASK_WEST = 0x0102040810204080ull;
+
+    constexpr U64 ANTIDIAGONAL = 0x8040201008040201ull;
+    constexpr U64 ANTIDIAGONAL_MASK_EAST = 0ull;
+    constexpr U64 ANTIDIAGONAL_MASK_WEST = 0ull;
+
     // Compiled Side struct
     struct SideCompiled {
         const U64 pawns;
@@ -64,8 +72,22 @@ namespace {
 
     // Function definitions
     // Helpers
+    // TODO: Lookup table for file, rank, diagonal, and antidiagonal
+        // Although already pretty computationally irrelevant as this is at compile time,
+        // think about doing this lookup table later on if such fucntions are needed at runtime
+        // so we don't have to generate each time?
     constexpr U64 getFile(const int piece_index) {return (FILE_H << (piece_index % 8));}
     constexpr U64 getRank(const int piece_index) {return (RANK_1 << ((piece_index / 8)*8));}   
+    constexpr U64 getDiagonal(const int piece_index) {
+        const int piece_x = piece_index % 8;
+        const int piece_y = piece_index / 8;
+
+        U64 moves = DIAGONAL >> piece_x*8;
+        moves = moves << piece_y*8;
+
+        return moves;
+    }
+    constexpr U64 getAntidiagonal(const int piece_index) {return 0ull;} //TODO
     constexpr U64 reverseBoard(U64 board) {
         board = (board >> 1 & 0x5555555555555555ull) | ((board & 0x5555555555555555ull) << 1);
         board = (board >> 2 & 0x3333333333333333ull) | ((board & 0x3333333333333333ull) << 2);
@@ -75,6 +97,7 @@ namespace {
         board = (board >> 32) | (board << 32);
         return board;
     }
+
     //Compiled Struct functions
     constexpr U64 SideCompiled::getAllPieces() const {
         return pawns | bishops | knights | king | queens | rooks;
@@ -96,14 +119,28 @@ namespace {
         }
         return moves;
     }
-    constexpr U64 SideCompiled::getAllBishopMoves(SideCompiled opposing) const {
+    constexpr U64 SideCompiled::getAllBishopMoves(SideCompiled opposing) const { //TODO: Finish
         U64 moves = 0ull;
-
+        for (int i = 0; i < 64; i++) {
+            // if true, found bit for 1
+            if (bishops & (1ull << i)) {
+                moves |= this->m_slidingMoves(i, getDiagonal(i), opposing);
+                moves |= this->m_slidingMoves(i, getAntidiagonal(i), opposing);
+            }
+        }
         return moves;
     }
-    constexpr U64 SideCompiled::getAllQueenMoves(SideCompiled opposing) const {
+    constexpr U64 SideCompiled::getAllQueenMoves(SideCompiled opposing) const { //TODO: Finish
         U64 moves = 0ull;
-
+        for (int i = 0; i < 64; i++) {
+            // if true, found bit for 1
+            if (queens & (1ull << i)) {
+                moves |= this->m_slidingMoves(i, getFile(i), opposing);
+                moves |= this->m_slidingMoves(i, getRank(i), opposing);
+                moves |= this->m_slidingMoves(i, getDiagonal(i), opposing);
+                moves |= this->m_slidingMoves(i, getAntidiagonal(i), opposing);
+            }
+        }
         return moves;
     }
     constexpr U64 SideCompiled::getAllKingMoves() const {
@@ -198,12 +235,12 @@ void bitboardDevFunc() {
     //moves |= sliding_moves(square, rank);
 
     //printBitBoard(reverseBoard(0x0000080000000000ull));
-    constexpr int pos = 30;
-    constexpr U64 examp = white_compiled.m_slidingMoves(pos, getRank(pos), black_compiled) | white_compiled.m_slidingMoves(pos, getFile(pos), black_compiled);
-    static_assert(examp > 0, "examp not compile time");
+    //constexpr int pos = 30;
+    //constexpr U64 examp = white_compiled.m_slidingMoves(pos, getRank(pos), black_compiled) | white_compiled.m_slidingMoves(pos, getFile(pos), black_compiled);
+    //static_assert(examp > 0, "examp not compile time");
     //printBitBoard(examp);
-    constexpr U64 rookAttacks = black_compiled.getAllRookMoves(white_compiled);
-    static_assert(rookAttacks > 0, "rookAttacks not compile time based");
-    printBitBoard(rookAttacks);
+    //constexpr U64 rookAttacks = black_compiled.getAllRookMoves(white_compiled);
+    //static_assert(rookAttacks > 0, "rookAttacks not compile time based");
+    printBitBoard(getDiagonal(8));
 }
 #endif
