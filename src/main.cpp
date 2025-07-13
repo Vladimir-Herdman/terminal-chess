@@ -38,7 +38,9 @@ int main(int argc, char *argv[]) {
     //initializeWhiteBoard();
     //Game().beginMatch();
 
+    #ifdef DEV_HELPERS_LATER_REMOVE
     bitboardDevFunc();
+    #endif
 
     return 0;
 }

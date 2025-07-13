@@ -16,7 +16,7 @@ all: ${OBJ}
 build/%.o: src/%.cpp
 	@mkdir -p $(dir $@)
 	@${CXX} ${CXXFLAGS} ${CXXPREDEFS} -c $< -o $@
-#@g++ ${CXXFLAGS} -c $< -o $@
+#@g++ ${CXXFLAGS} ${CXXPREDEFS} -c $< -o $@
 
 # Here, we have litte make scripts we can use
 # 	.PHONY says, hey, this 'file' is always out of date, so always execute
