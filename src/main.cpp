@@ -2,6 +2,8 @@
     // Configuration file
         // Should be able to change all colors and symbols used throughout
         // Turn on / off a lot of settings, like highlight move, abc123 row/cols
+        // Interactive Mode
+            // VIM bindings?
     // Break apart some sections so more readable
     // Seperate code into other header and source files for logic based main.cpp
     // Command line arguments

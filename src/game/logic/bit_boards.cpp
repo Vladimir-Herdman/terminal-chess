@@ -5,6 +5,8 @@
     // goal is to compile time as much as possible for faster runtime usage,
     // so it may get a little dirtier here at first.
 // NOTE: use static_assert() to check compile time values are actually 'compile-time'
+#include <array>
+#include <bit>
 #include <cstdint>
 #include <iostream> //REMOVE
 
@@ -21,6 +23,7 @@ namespace {
     constexpr U64 FILE_GH = (0x0202020202020202ull | FILE_H);
 
     constexpr U64 RANK_1 = 0x00000000000000FFull;
+    constexpr U64 RANK_2 = 0x000000000000FF00ull;
     constexpr U64 RANK_8 = 0xFF00000000000000ull;
 
     constexpr U64 DIAGONAL = 0x0102040810204080ull;
@@ -46,11 +49,13 @@ namespace {
         constexpr U64 getAllPieces() const;
         //sliding piece move getters return all pieces possible moves
         //TODO: Later if needed, individual moves
-        constexpr U64 getAllKnightMoves() const;
+        constexpr U64 getAllPawnMoves(SideCompiled opposing) const;
         constexpr U64 getAllRookMoves(SideCompiled opposing) const;
         constexpr U64 getAllBishopMoves(SideCompiled opposing) const;
         constexpr U64 getAllQueenMoves(SideCompiled opposing) const;
-        constexpr U64 getAllKingMoves() const;
+
+        static constexpr U64 getKnightMoves(const U64 piece);
+        static constexpr U64 getKingMoves(const U64 piece);
     };
 
     constexpr SideCompiled white_compiled {
@@ -106,52 +111,74 @@ namespace {
     constexpr U64 SideCompiled::getAllPieces() const {
         return pawns | bishops | knights | king | queens | rooks;
     }
-    constexpr U64 SideCompiled::getAllKnightMoves() const {
-        return  ((((knights >> 6)  | (knights << 10)) & ~FILE_GH) |
-                (((knights >> 10) | (knights << 6))  & ~FILE_AB) |
-                (((knights >> 15) | (knights << 17)) & ~FILE_H)  |
-                (((knights >> 17) | (knights << 15)) & ~FILE_A)) & (~getAllPieces());
+    constexpr U64 SideCompiled::getAllPawnMoves(const SideCompiled opposing) const {
+        const U64 opp_piecesMask = (~opposing.getAllPieces());
+        const U64 blockers_mask = (opp_piecesMask & ~getAllPieces());
+
+        const U64 moves_single = (pawns << 8) & opp_piecesMask;
+        const U64 moves_double = (((pawns & RANK_2) << 8) & opp_piecesMask) << 8;
+
+        U64 pawns_temp = pawns;
+        int i = 0;
+        //TODO: pawn attacks in moves
+        //while (pawns_temp) {
+        //    i += std::countr_zero(pawns_temp);
+        //    pawns_temp
+        //}
+
+        // NOTE: When at runtime, use a board check for if to search en passant
+            // if (board.white.en_passant_potential) { ...CheckBoardForAvailableWhiteMoves... }
+
+        std::countr_zero(moves_single);
+
+        return (moves_single | moves_double) & blockers_mask;
     }
     constexpr U64 SideCompiled::getAllRookMoves(const SideCompiled opposing) const {
         U64 moves = 0ull;
-        for (int i = 0; i < 64; i++) {
-            // if true, found bit for 1
-            if (rooks & (1ull << i)) {
-                moves |= this->m_slidingMoves(i, getFile(i), opposing);
-                moves |= this->m_slidingMoves(i, getRank(i), opposing);
-            }
+        U64 rooks_temp = rooks;
+        while (rooks_temp) {
+            int i = std::countr_zero(rooks_temp);
+            rooks_temp &= rooks_temp - 1;
+            moves |= this->m_slidingMoves(i, getFile(i), opposing);
+            moves |= this->m_slidingMoves(i, getRank(i), opposing);
         }
         return moves;
     }
     constexpr U64 SideCompiled::getAllBishopMoves(const SideCompiled opposing) const { //TODO: Finish
         U64 moves = 0ull;
-        for (int i = 0; i < 64; i++) {
-            // if true, found bit for 1
-            if (bishops & (1ull << i)) {
-                moves |= this->m_slidingMoves(i, getDiagonal(i), opposing);
-                moves |= this->m_slidingMoves(i, getAntidiagonal(i), opposing);
-            }
+        U64 bishops_temp = bishops;
+        while (bishops_temp) {
+            int i = std::countr_zero(bishops_temp);
+            bishops_temp &= bishops_temp - 1;
+            moves |= this->m_slidingMoves(i, getDiagonal(i), opposing);
+            moves |= this->m_slidingMoves(i, getAntidiagonal(i), opposing);
         }
         return moves;
     }
     constexpr U64 SideCompiled::getAllQueenMoves(const SideCompiled opposing) const { //TODO: Finish
         U64 moves = 0ull;
-        for (int i = 0; i < 64; i++) {
-            // if true, found bit for 1
-            if (queens & (1ull << i)) {
-                moves |= this->m_slidingMoves(i, getFile(i), opposing);
-                moves |= this->m_slidingMoves(i, getRank(i), opposing);
-                moves |= this->m_slidingMoves(i, getDiagonal(i), opposing);
-                moves |= this->m_slidingMoves(i, getAntidiagonal(i), opposing);
-            }
+        U64 queens_temp = queens;
+        while (queens_temp) {
+            int i = std::countr_zero(queens_temp);
+            queens_temp &= queens_temp - 1;
+            moves |= this->m_slidingMoves(i, getFile(i), opposing);
+            moves |= this->m_slidingMoves(i, getRank(i), opposing);
+            moves |= this->m_slidingMoves(i, getDiagonal(i), opposing);
+            moves |= this->m_slidingMoves(i, getAntidiagonal(i), opposing);
         }
         return moves;
     }
-    constexpr U64 SideCompiled::getAllKingMoves() const {
-        return  ((king << 1) & (~FILE_H) | (king >> 1) & (~FILE_A)  |
-                (king << 8)             | (king >> 8)              |
-                (king << 7) & (~FILE_A) | (king >> 7) & (~FILE_H)  |
-                (king << 9) & (~FILE_H) | (king >> 9) & (~FILE_A)) & (~getAllPieces());
+    constexpr U64 SideCompiled::getKnightMoves(const U64 piece) {
+        return  ((((piece >> 6) | (piece << 10)) & ~FILE_GH) |
+                (((piece >> 10) | (piece << 6))  & ~FILE_AB) |
+                (((piece >> 15) | (piece << 17)) & ~FILE_H)  |
+                (((piece >> 17) | (piece << 15)) & ~FILE_A));
+    }
+    constexpr U64 SideCompiled::getKingMoves(const U64 piece) {
+        return  ((piece << 1) & (~FILE_H) | (piece >> 1) & (~FILE_A) |
+                (piece << 8)              | (piece >> 8)             |
+                (piece << 7) & (~FILE_A)  | (piece >> 7) & (~FILE_H) |
+                (piece << 9) & (~FILE_H)  | (piece >> 9) & (~FILE_A));
     }
     constexpr U64 SideCompiled::m_slidingMoves(const int piece_index, const U64 mask, SideCompiled opposing) const {
         U64 piece_board = 1ull << piece_index;
@@ -173,10 +200,47 @@ namespace {
         moves_board &= ~friendly;
         return moves_board;
     }
+
+    // Seperate functions
+    constexpr std::array<U64, 64> getKingMovesLookupTable() {
+        std::array<U64, 64> table{};
+        for (int i = 0; i < 64; i++) {
+            table[i] = SideCompiled::getKingMoves(1ull << i);
+        }
+        return table;
+    }
+    constexpr std::array<U64, 64> getKnightMovesLookupTable() {
+        std::array<U64, 64> table{};
+        for (int i = 0; i < 64; i++) {
+            table[i] = SideCompiled::getKnightMoves(1ull << i);
+        }
+        return table;
+    }
+    constexpr std::array<U64, 64> getWhitePawnAttackLookupTable() {
+        std::array<U64, 64> table{};
+        for (int i = 0; i < 64; i++) {
+            table[i] = ((1ull << 9) & ~FILE_H) | ((1ull << 7) & ~FILE_A);
+        }
+        return table;
+    }
+    constexpr std::array<U64, 64> getBlackPawnAttackLookupTable() {
+        std::array<U64, 64> table{};
+        const U64 pawn_attack = 0x0;
+        for (int i = 0; i < 64; i++) {
+            table[i] = SideCompiled::getKnightMoves(1ull << i);
+        }
+        return table;
+    }
 }
 
 //TODO: Fix with Side once SideCompiled is finished
 namespace BITBOARDS {
+    namespace PRECOMPILED {
+        constexpr std::array<U64, 64> kingMovesLookup = getKingMovesLookupTable();
+        constexpr std::array<U64, 64> knightMovesLookup = getKnightMovesLookupTable();
+        constexpr std::array<U64, 64> whitePawnAttackLookup = getWhitePawnAttackLookupTable();
+        constexpr std::array<U64, 64> blackPawnAttackLookup = getBlackPawnAttackLookupTable();
+    }
     //constexpr int popLSB(U64 bitboard) {
     //    for (int i = 0; i < 64; i++) {
     //        if (bitboard & (1ull << i)) {
@@ -230,7 +294,7 @@ void printBitBoard(U64 num) {
 
 void bitboardDevFunc() {
     constexpr U64 rook_ex = 0x0000000800000000ull;
-    constexpr U64 square = white_compiled.getAllKnightMoves();
+    constexpr U64 square = white_compiled.getKnightMoves(0x0000000000000002ull);
     //static assert for compile time checking of code
     //static_assert((square > 0), "square does not exist");
     U64 file = getFile(square);
@@ -250,5 +314,17 @@ void bitboardDevFunc() {
     printBitBoard(white_compiled.getAllQueenMoves(black_compiled));
     static_assert(getDiagonal(0) >= 0, "test here");
     static_assert(white_compiled.getAllQueenMoves(black_compiled) >= 0, "Not compile-time");
+
+    std::cout << '\n';
+    printBitBoard(BITBOARDS::PRECOMPILED::kingMovesLookup[26]);
+    static_assert(BITBOARDS::PRECOMPILED::kingMovesLookup[26] >= 0, "Not compile-time");
+
+    std::cout << '\n';
+    printBitBoard(BITBOARDS::PRECOMPILED::knightMovesLookup[63]);
+    static_assert(BITBOARDS::PRECOMPILED::knightMovesLookup[63] >= 0, "Not compile-time");
+
+    std::cout << '\n';
+    printBitBoard(white_compiled.getAllPawnMoves(black_compiled));
+    static_assert(white_compiled.getAllPawnMoves(black_compiled) >= 0, "Not compile-time");
 }
 #endif

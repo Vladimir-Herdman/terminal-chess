@@ -15,8 +15,7 @@ ehthumbs_vista.db
 .idea/
 
 # Executables
-main
-test
+bin/
 
 # C++ objects and libs
 *.slo
@@ -33,3 +32,4 @@ test
 # Personal
 .clangd
 compile_flags.txt
+test/
