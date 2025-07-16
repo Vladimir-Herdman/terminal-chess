@@ -214,18 +214,12 @@ namespace {
         }
         return table;
     }
-    constexpr std::array<U64, 64> getWhitePawnAttackLookupTable() {
+    constexpr std::array<U64, 64> getPawnAttackLookupTable() {
         std::array<U64, 64> table{};
         for (int i = 0; i < 64; i++) {
-            table[i] = ((1ull << 9) & ~FILE_H) | ((1ull << 7) & ~FILE_A);
-        }
-        return table;
-    }
-    constexpr std::array<U64, 64> getBlackPawnAttackLookupTable() {
-        std::array<U64, 64> table{};
-        const U64 pawn_attack = 0x0;
-        for (int i = 0; i < 64; i++) {
-            table[i] = SideCompiled::getKnightMoves(1ull << i);
+            U64 moves = (2ull << i) & ~FILE_H;
+            if (i > 0) {moves |= ((1ull << (i-1)) & ~FILE_A);}
+            table[i] = moves;
         }
         return table;
     }
@@ -236,8 +230,7 @@ namespace BITBOARDS {
     namespace PRECOMPILED {
         constexpr std::array<U64, 64> kingMovesLookup = getKingMovesLookupTable();
         constexpr std::array<U64, 64> knightMovesLookup = getKnightMovesLookupTable();
-        constexpr std::array<U64, 64> whitePawnAttackLookup = getWhitePawnAttackLookupTable();
-        constexpr std::array<U64, 64> blackPawnAttackLookup = getBlackPawnAttackLookupTable();
+        constexpr std::array<U64, 64> pawnAttackLookup = getPawnAttackLookupTable();  //TODO: Use some white/black finagling to figure out attack index at runtime
     }
     //constexpr int popLSB(U64 bitboard) {
     //    for (int i = 0; i < 64; i++) {
@@ -321,8 +314,11 @@ void bitboardDevFunc() {
     printBitBoard(BITBOARDS::PRECOMPILED::knightMovesLookup[63]);
     static_assert(BITBOARDS::PRECOMPILED::knightMovesLookup[63] >= 0, "Not compile-time");
 
-    std::cout << '\n';
-    printBitBoard(white_compiled.getAllPawnMoves(black_compiled));
-    static_assert(white_compiled.getAllPawnMoves(black_compiled) >= 0, "Not compile-time");
+    //std::cout << '\n';
+    //printBitBoard(white_compiled.getAllPawnMoves(black_compiled));
+    //static_assert(white_compiled.getAllPawnMoves(black_compiled) >= 0, "Not compile-time");
+
+    printBitBoard(BITBOARDS::PRECOMPILED::pawnAttackLookup[0]);
+    static_assert(BITBOARDS::PRECOMPILED::pawnAttackLookup[0] > 0, "not compile-time");
 }
 #endif
