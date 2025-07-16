@@ -129,8 +129,6 @@ namespace {
         // NOTE: When at runtime, use a board check for if to search en passant
             // if (board.white.en_passant_potential) { ...CheckBoardForAvailableWhiteMoves... }
 
-        std::countr_zero(moves_single);
-
         return (moves_single | moves_double) & blockers_mask;
     }
     constexpr U64 SideCompiled::getAllRookMoves(const SideCompiled opposing) const {

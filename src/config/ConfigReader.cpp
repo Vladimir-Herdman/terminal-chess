@@ -33,7 +33,7 @@ ConfigReader::ConfigReader() {
               // whatever configuration, and then set global value for reference
               // in main -> maybe singleton class? or pass an interface to method?
         if (config_map.find(key) != config_map.end()) {
-            config_map[key](value);
+            config_map.at(key)(value);
         } else {std::cerr << "Config file variable " << key << " does not exist" << '\n';}
     }
     

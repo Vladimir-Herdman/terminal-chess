@@ -1,6 +1,5 @@
 #include <algorithm>
 #include <cstdlib>
-#include <cwchar>
 #include <format>
 #include <iostream>
 #include <string>
@@ -93,7 +92,7 @@ namespace {
     void w_king(std::string& value) {clean_piece(value); CONFIG::PIECES.w_king = value;}
 }
 
-ConfigMap config_map = {
+const ConfigMap config_map = {
     {"board_edge", board_edge},
 
     {"black_square_background", b_bg},

@@ -4,6 +4,6 @@
 #include <string>
 #include <map>
 
-extern std::map<std::string, void (*)(std::string&)> config_map;
+extern const std::map<std::string, void (*)(std::string&)> config_map;
 
 #endif //TERMINALCHESS_CONFIGMAP_G
