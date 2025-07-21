@@ -9,6 +9,8 @@
     // Command line arguments
         // Start from black side
         // Show both sides at once
+#include <ios>
+
 #ifdef TERMINALCHESS_INCLUDE_CONFIGREADER
     #include "config/ConfigReader.hpp"
 #endif
@@ -17,7 +19,7 @@
 
 auto& OPTIONS = CONFIG::OPTIONS;
 
-void commandLineArguments(int& argc, char *argv[]) {
+void command_line_arguments(int& argc, char *argv[]) {
     for (int i = 1; i < argc; i++) {
         std::string arg = argv[i];
         switch (arg[1]) {
@@ -28,8 +30,10 @@ void commandLineArguments(int& argc, char *argv[]) {
 }
 
 int main(int argc, char *argv[]) {
+    std::ios_base::sync_with_stdio(false);
+
     // Before config file, direct chess command line options are applied
-    commandLineArguments(argc, argv);
+    command_line_arguments(argc, argv);
 
     // Read in config file, will overwrite any previous command line arguments
     #ifdef TERMINALCHESS_INCLUDE_CONFIGREADER

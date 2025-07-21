@@ -10,8 +10,8 @@ public:
 
 private:
     // will clean line, and return where '=' sign at if found
-    int cleanLine(std::string& line);
-    std::string getConfigFile();
+    int m_cleanLine(std::string& line);
+    std::string m_getConfigFile();
 };
 
 #endif //TERMINAL_CHESS_CONFIGREADER_H

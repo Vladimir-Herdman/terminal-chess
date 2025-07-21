@@ -1,11 +1,11 @@
 #include <string>
 
-#include "config/ConfigData.hpp"
+//#include "config/ConfigData.hpp"
 #include "game.hpp"
 
 namespace {
-    auto& PIECES = CONFIG::PIECES;
-    auto& COLORS = CONFIG::COLORS;
+    //auto& PIECES = CONFIG::PIECES;
+    //auto& COLORS = CONFIG::COLORS;
 }
 
 // Publics

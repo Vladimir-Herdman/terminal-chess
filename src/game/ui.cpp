@@ -5,7 +5,7 @@
 #include "config/ConfigData.hpp"
 #include "ui.hpp"
 
-using U64 = std::uint64_t;
+using u64 = std::uint64_t;
 
 auto& COLORS = CONFIG::COLORS;
 auto& PIECES = CONFIG::PIECES;

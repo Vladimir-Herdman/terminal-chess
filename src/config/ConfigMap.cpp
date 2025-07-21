@@ -30,7 +30,6 @@ namespace {
                 << ", b=" << final.substr(9, 3)
                 << '\n';
         }
-        
     }
 
     // Convert rgb color code to ANSI escape sequence color code
