@@ -1,3 +1,5 @@
+#include "ConfigReader.hpp"
+
 #include <cstdlib>
 #include <algorithm>
 #include <filesystem>
@@ -5,7 +7,6 @@
 #include <iostream>
 #include <string>
 
-#include "ConfigReader.hpp"
 #include "ConfigMap.hpp"
 
 ConfigReader::ConfigReader() {

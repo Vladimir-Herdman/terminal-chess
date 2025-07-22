@@ -1,10 +1,11 @@
+#include "ConfigMap.hpp"
+
 #include <algorithm>
 #include <cstdlib>
 #include <format>
 #include <iostream>
 #include <string>
 
-#include "ConfigMap.hpp"
 #include "ConfigData.hpp"
 
 

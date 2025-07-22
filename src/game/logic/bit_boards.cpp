@@ -5,12 +5,13 @@
     // goal is to compile time as much as possible for faster runtime usage,
     // so it may get a little dirtier here at first.
 // NOTE: use static_assert() to check compile time values are actually 'compile-time'
+// NOTE: magic bitboards papaer
+#include "game/logic/bit_boards.hpp"
+
 #include <array>
 #include <bit>
 #include <cstdint>
 #include <iostream> //REMOVE
-
-#include "game/logic/bit_boards.hpp"
 
 namespace {
     //Usings
@@ -232,6 +233,25 @@ namespace BITBOARDS {
         constexpr std::array<u64, 64> knightMovesLookup = getKnightMovesLookupTable();
         constexpr std::array<u64, 64> pawnAttackLookup = getPawnAttackLookupTable();  //TODO: Use some white/black finagling to figure out attack index at runtime
     }
+
+    Side white = {
+        .pawns   = 0x000000000000FF00ull,
+        .rooks   = 0x0000000000000081ull,
+        .knights = 0x0000000000000042ull,
+        .bishops = 0x0000000000000024ull,
+        .queens  = 0x0000000000000010ull,
+        .king    = 0x0000000000000008ull,
+        .opposing = black
+    };
+    Side black = {
+        .pawns   = 0x00FF000000000000ull,
+        .rooks   = 0x8100000000000000ull,
+        .knights = 0x4200000000000000ull,
+        .bishops = 0x2400000000000000ull,
+        .queens  = 0x1000000000000000ull,
+        .king    = 0x0800000000000000ull,
+        .opposing = white
+    };
     //constexpr int popLSB(u64 bitboard) {
     //    for (int i = 0; i < 64; i++) {
     //        if (bitboard & (1ull << i)) {

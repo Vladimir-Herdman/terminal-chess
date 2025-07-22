@@ -15,6 +15,7 @@
     #include "config/ConfigReader.hpp"
 #endif
 #include "config/ConfigData.hpp"
+#include "game/game.hpp"
 #include "game/logic/bit_boards.hpp" //REMOVE
 
 auto& OPTIONS = CONFIG::OPTIONS;
@@ -44,9 +45,11 @@ int main(int argc, char *argv[]) {
     //initializeWhiteBoard();
     //Game().beginMatch();
 
-    #ifdef DEV_HELPERS_LATER_REMOVE
-    bitboardDevFunc();
-    #endif
+    Game().begin();
+
+    //#ifdef DEV_HELPERS_LATER_REMOVE
+    //bitboardDevFunc();
+    //#endif
 
     return 0;
 }

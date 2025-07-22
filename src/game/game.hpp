@@ -1,17 +1,19 @@
-#ifndef TERMINALCHESS_GAME_H
-#define TERMINALCHESS_GAME_H
+#ifndef TERMINALCHESS_GAME_GAME_H
+#define TERMINALCHESS_GAME_GAME_H
 
-#include <string>
+#include "game/logic/bit_boards.hpp"
+#include "game/ui/ui.hpp"
 
 class Game {
-private:
-    std::string m_generateBoard();
-
 public:
-    // Initialize all the settings and setups needed to play
     Game();
-    // Actually start the match and begin printing everything
-    void beginMatch();
+    void begin();
+
+private:
+    void print_board();
+    UI ui;
+    const BITBOARDS::Side& white = BITBOARDS::white;
+    const BITBOARDS::Side& black = BITBOARDS::black;
 };
 
-#endif //TERMINALCHESS_GAME_H
+#endif //TERMINALCHESS_GAME_GAME_H
