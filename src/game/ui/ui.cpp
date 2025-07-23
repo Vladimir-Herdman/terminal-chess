@@ -1,92 +1,69 @@
 #include "game/ui/ui.hpp"
 
+#include <algorithm>
 #include <cstdint>
+#include <iostream> //REMOVE
 #include <string>
 
-#include "config/ConfigData.hpp"
+#define SCI(arg) static_cast<int>(arg)
 
-using u64 = std::uint64_t;
+namespace {
+    using u64 = std::uint64_t;
 
-auto& COLORS = CONFIG::COLORS;
-auto& PIECES = CONFIG::PIECES;
+    //auto& COLORS = CONFIG::COLORS;
+    //auto& PIECES = CONFIG::PIECES;
 
-std::string PIECE = "   ";
-
-// Check options and configure ui based off such configurations
-    // For example, check for the no letter or numbers option to turn off
-    // those pieces from board
-UI::UI() {
-    m_assign_board();
+    //std::string PIECE = "   ";
+    // board initializations
+    
+    constexpr UI::pieces board_default[10][10] = {
+        {UI::pieces::EDGE_V, UI::pieces::EDGE_H, UI::pieces::EDGE_H, UI::pieces::EDGE_H, UI::pieces::EDGE_H, UI::pieces::EDGE_H, UI::pieces::EDGE_H, UI::pieces::EDGE_H, UI::pieces::EDGE_H, UI::pieces::EDGE_V},
+        {UI::pieces::EDGE_LETTER, UI::pieces::B_ROOK, UI::pieces::B_KNIGHT, UI::pieces::B_BISHOP, UI::pieces::B_QUEEN, UI::pieces::B_KING, UI::pieces::B_BISHOP, UI::pieces::B_KNIGHT, UI::pieces::B_ROOK, UI::pieces::EDGE_V},
+        {UI::pieces::EDGE_LETTER, UI::pieces::B_PAWN, UI::pieces::B_PAWN, UI::pieces::B_PAWN, UI::pieces::B_PAWN, UI::pieces::B_PAWN, UI::pieces::B_PAWN, UI::pieces::B_PAWN, UI::pieces::B_PAWN, UI::pieces::EDGE_V},
+        {UI::pieces::EDGE_LETTER, UI::pieces::SPACE, UI::pieces::SPACE, UI::pieces::SPACE, UI::pieces::SPACE, UI::pieces::SPACE, UI::pieces::SPACE, UI::pieces::SPACE, UI::pieces::SPACE, UI::pieces::EDGE_V},
+        {UI::pieces::EDGE_LETTER, UI::pieces::SPACE, UI::pieces::SPACE, UI::pieces::SPACE, UI::pieces::SPACE, UI::pieces::SPACE, UI::pieces::SPACE, UI::pieces::SPACE, UI::pieces::SPACE, UI::pieces::EDGE_V},
+        {UI::pieces::EDGE_LETTER, UI::pieces::SPACE, UI::pieces::SPACE, UI::pieces::SPACE, UI::pieces::SPACE, UI::pieces::SPACE, UI::pieces::SPACE, UI::pieces::SPACE, UI::pieces::SPACE, UI::pieces::EDGE_V},
+        {UI::pieces::EDGE_LETTER, UI::pieces::SPACE, UI::pieces::SPACE, UI::pieces::SPACE, UI::pieces::SPACE, UI::pieces::SPACE, UI::pieces::SPACE, UI::pieces::SPACE, UI::pieces::SPACE, UI::pieces::EDGE_V},
+        {UI::pieces::EDGE_LETTER, UI::pieces::W_PAWN, UI::pieces::W_PAWN, UI::pieces::W_PAWN, UI::pieces::W_PAWN, UI::pieces::W_PAWN, UI::pieces::W_PAWN, UI::pieces::W_PAWN, UI::pieces::W_PAWN, UI::pieces::EDGE_V},
+        {UI::pieces::EDGE_LETTER, UI::pieces::W_ROOK, UI::pieces::W_KNIGHT, UI::pieces::W_BISHOP, UI::pieces::W_QUEEN, UI::pieces::W_KING, UI::pieces::W_BISHOP, UI::pieces::W_KNIGHT, UI::pieces::W_ROOK, UI::pieces::EDGE_V},
+        {UI::pieces::EDGE_V, UI::pieces::EDGE_NUM, UI::pieces::EDGE_NUM, UI::pieces::EDGE_NUM, UI::pieces::EDGE_NUM, UI::pieces::EDGE_NUM, UI::pieces::EDGE_NUM, UI::pieces::EDGE_NUM, UI::pieces::EDGE_NUM, UI::pieces::EDGE_V}
+    };
 }
 
+// Publics
+// Check options and configure ui based off such configurations
+// For example, check for the no letter or numbers option to turn off
+// those pieces from board
+UI::UI() {
+    m_fill_initial_board();
+}
+std::string UI::get_square(const int r, const int c) const {
+    const int piece_val = SCI(board[r][c]);
+    std::string square = m_get_bg_color(r, c) + m_get_fg_color(piece_val);
+    square += m_get_piece(piece_val);
+    return square;
+}
 
-//void setPiece(int row, int column) {
-//    PIECE = ui_lookup[static_cast<int>(board[row-1][column-1])];
-//
-//    // Old logic (just prints a board, no connection to bitboards)
-//    //switch (row) {
-//    //    case 2: PIECE = PIECES.b_pawn; break;
-//    //    case 7: PIECE = PIECES.w_pawn; break;
-//    //    case 1: 
-//    //        switch (column) {
-//    //            case 2: PIECE = PIECES.b_knight; break;
-//    //            case 7: PIECE = PIECES.b_knight; break;
-//    //            case 1: PIECE = PIECES.b_rook; break;
-//    //            case 8: PIECE = PIECES.b_rook; break;
-//    //            case 3: PIECE = PIECES.b_bishop; break;
-//    //            case 6: PIECE = PIECES.b_bishop; break;
-//    //            case 4: PIECE = PIECES.b_queen; break;
-//    //            default: PIECE = PIECES.b_king; break;
-//    //        }; break;
-//    //    case 8:
-//    //        switch (column) {
-//    //            case 2: PIECE = PIECES.w_knight; break;
-//    //            case 7: PIECE = PIECES.w_knight; break;
-//    //            case 1: PIECE = PIECES.w_rook; break;
-//    //            case 8: PIECE = PIECES.w_rook; break;
-//    //            case 3: PIECE = PIECES.w_bishop; break;
-//    //            case 6: PIECE = PIECES.w_bishop; break;
-//    //            case 4: PIECE = PIECES.w_queen; break;
-//    //            default: PIECE = PIECES.w_king; break;
-//    //        }; break;
-//    //}
-//}
-//
-//void initializeWhiteBoard() {
-//    int i, j;
-//    std::string edge_h = COLORS.edge + "   " + COLORS.reset;
-//    std::string edge_v = COLORS.edge + "  " + COLORS.reset;
-//    std::string background = COLORS.b_bg;
-//    std::string foreground = COLORS.b_fg;
-//
-//    for (i = 0; i < 10; i++) {
-//        for (j = 0; j < 10; j++) {
-//
-//            if (j == 0) { // Edges
-//                if (i > 0 && i < 9) { edge_v[19] = '9'-i; }
-//                std::cout << edge_v;
-//                continue;
-//            }
-//            if (j == 9) { edge_v[19] = ' '; std::cout << edge_v; continue; }
-//
-//            if (i == 0) { edge_h[20] = ' '; std::cout << edge_h; continue; } 
-//            if (i == 9) {
-//                if (j > 0 && j < 9) { edge_h[20] = '`'+j; }
-//                std::cout << edge_h; 
-//                continue;
-//            }
-//
-//            background = ((j+i)%2 == 0) ? COLORS.w_bg : COLORS.b_bg;
-//
-//            setPiece(i, j);
-//
-//            // piece[0] = map(j);
-//
-//            //printf("%s%s%s\x1B[0m", background, foreground, PIECE);
-//            std::cout << background << foreground << PIECE;
-//            PIECE = "   ";
-//        }
-//        std::cout << "\n";
-//        foreground = (i < 4) ? COLORS.b_fg : COLORS.w_fg;
-//    }
-//}
+// Privates
+// Fill initial board representation with enum values from default boards
+void UI::m_fill_initial_board() {
+    std::copy(std::begin(board_default[0]), std::end(board_default[9]), board[0]);
+}
+//TODO: Look into setting up string references to CONFIG so less strings just copy returned
+std::string UI::m_get_bg_color(const int r, const int c) const {
+    return bg_lookup[(r==0||r==9)?0:1][(c+r)%2]; //dirty math here, beware: checkered
+}
+std::string UI::m_get_fg_color(const int piece_val) const {
+    if (piece_val < 6) { //pieces enum values 0-5 are white pieces
+        return fg_lookup[SCI(colors::W_FG)];
+    } else if (piece_val < 12) { //pieces enum values 6-11 are black
+        return fg_lookup[SCI(colors::B_FG)];
+    }
+    return fg_lookup[SCI(colors::RESET)];
+}
+std::string UI::m_get_piece(const int piece_val) const {
+    return pieces_lookup[piece_val];
+}
+
+// Macros
+#undef SCI

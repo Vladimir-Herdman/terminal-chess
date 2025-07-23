@@ -8,15 +8,18 @@ Game::Game() {
 }
 
 void Game::begin() {
-    print_board();
+    m_print_board();
 }
 
 // Privates
-void Game::print_board() {
-    for (int row = 0; row < 10; row++) {
-        for (int column = 0; column < 10; column++) {
-            std::cout << ui.pieces_lookup[static_cast<int>(ui.board[row][column])];
+void Game::m_print_board() {
+    std::string line = "";
+    for (int r = 0; r < 10; r++) {
+        for (int c = 0; c < 10; c++) {
+            line += ui.get_square(r, c);
         }
+
+        std::cout << line + CONFIG::COLORS.reset << '\n';
+        line = "";
     }
-    std::cout << '\n';
 }

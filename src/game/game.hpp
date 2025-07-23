@@ -10,7 +10,7 @@ public:
     void begin();
 
 private:
-    void print_board();
+    void m_print_board();
     UI ui;
     const BITBOARDS::Side& white = BITBOARDS::white;
     const BITBOARDS::Side& black = BITBOARDS::black;
