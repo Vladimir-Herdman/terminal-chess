@@ -42,6 +42,19 @@ std::string UI::get_square(const int r, const int c) const {
     if (r == 9 && (c > 0 && c < 9)) {m_get_square_letters(square, c);}
     return square;
 }
+void UI::print_board() const {
+    std::string line = "";
+    line.reserve(5000);
+    std::string reset_color = CONFIG::COLORS.reset;
+
+    for (int r = 0; r < 10; r++) {
+        for (int c = 0; c < 10; c++) {
+            line += get_square(r, c);
+        }
+        line += reset_color + '\n';
+    }
+    std::cout << line;
+}
 
 // Privates
 // Fill initial board representation with enum values from default boards

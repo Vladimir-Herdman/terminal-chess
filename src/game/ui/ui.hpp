@@ -11,6 +11,7 @@ class UI {
 public:
     UI();
     std::string get_square(const int r, const int c) const;
+    void print_board() const;
     const std::string pieces_lookup[17] = {
         CONFIG::PIECES.w_pawn, CONFIG::PIECES.w_knight,
         CONFIG::PIECES.w_bishop, CONFIG::PIECES.w_rook,
