@@ -48,6 +48,14 @@ private:
     std::string m_get_bg_color(const int r, const int c) const;
     std::string m_get_fg_color(const int piece_val) const;
     std::string m_get_piece(const int piece_val) const;
+    void m_get_square_letters(std::string& square, const int r) const;
+    void m_get_square_numbers(std::string& square, const int c) const;
+    const struct {
+        bool letters = CONFIG::OPTIONS.board_letters;
+        bool numbers = CONFIG::OPTIONS.board_numbers;
+    } m_options;
+    const char m_letter_lookup[8] = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
+    const char m_number_lookup[8] = {'1', '2', '3', '4', '5', '6', '7', '8'};
 
     friend class Game;
 };

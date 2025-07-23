@@ -2,6 +2,7 @@
 
 // Define defaults here in case of no config file
 namespace CONFIG {
+    //TODO: Add letter and number color options
     Color COLORS {
         .edge = "\x1B[48;2;048;046;043m",
 
@@ -30,8 +31,11 @@ namespace CONFIG {
         .w_king = " K ",
     };
 
+    //TODO: add the options to the config file as changeable
     Options OPTIONS {
         .verbose = false,
         .dry_run = false,
+        .board_letters = true,
+        .board_numbers = true,
     };
 };

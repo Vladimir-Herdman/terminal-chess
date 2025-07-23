@@ -14,12 +14,14 @@ void Game::begin() {
 // Privates
 void Game::m_print_board() {
     std::string line = "";
+    line.reserve(5000);
+    std::string reset_color = CONFIG::COLORS.reset;
+
     for (int r = 0; r < 10; r++) {
         for (int c = 0; c < 10; c++) {
             line += ui.get_square(r, c);
         }
-
-        std::cout << line + CONFIG::COLORS.reset << '\n';
-        line = "";
+        line += reset_color + '\n';
     }
+    std::cout << line;
 }

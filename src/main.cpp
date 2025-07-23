@@ -16,7 +16,6 @@
 #endif
 #include "config/ConfigData.hpp"
 #include "game/game.hpp"
-#include "game/logic/bit_boards.hpp" //REMOVE
 
 auto& OPTIONS = CONFIG::OPTIONS;
 
@@ -41,10 +40,7 @@ int main(int argc, char *argv[]) {
         if (!OPTIONS.dry_run) {ConfigReader();}
     #endif
 
-    // Show boards + start game
-    //initializeWhiteBoard();
-    //Game().beginMatch();
-
+    // Game will check options and configure, then begin will start everything to stdout
     Game().begin();
 
     //#ifdef DEV_HELPERS_LATER_REMOVE

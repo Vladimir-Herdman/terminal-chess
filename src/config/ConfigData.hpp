@@ -35,6 +35,8 @@ namespace CONFIG {
     struct Options {
         bool verbose;
         bool dry_run;
+        bool board_letters;
+        bool board_numbers;
     };
 
     extern Color COLORS;

@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <iostream> //REMOVE
+#include <limits>
 #include <string>
 
 #define SCI(arg) static_cast<int>(arg)
@@ -10,12 +11,6 @@
 namespace {
     using u64 = std::uint64_t;
 
-    //auto& COLORS = CONFIG::COLORS;
-    //auto& PIECES = CONFIG::PIECES;
-
-    //std::string PIECE = "   ";
-    // board initializations
-    
     constexpr UI::pieces board_default[10][10] = {
         {UI::pieces::EDGE_V, UI::pieces::EDGE_H, UI::pieces::EDGE_H, UI::pieces::EDGE_H, UI::pieces::EDGE_H, UI::pieces::EDGE_H, UI::pieces::EDGE_H, UI::pieces::EDGE_H, UI::pieces::EDGE_H, UI::pieces::EDGE_V},
         {UI::pieces::EDGE_LETTER, UI::pieces::B_ROOK, UI::pieces::B_KNIGHT, UI::pieces::B_BISHOP, UI::pieces::B_QUEEN, UI::pieces::B_KING, UI::pieces::B_BISHOP, UI::pieces::B_KNIGHT, UI::pieces::B_ROOK, UI::pieces::EDGE_V},
@@ -41,6 +36,10 @@ std::string UI::get_square(const int r, const int c) const {
     const int piece_val = SCI(board[r][c]);
     std::string square = m_get_bg_color(r, c) + m_get_fg_color(piece_val);
     square += m_get_piece(piece_val);
+    
+    // get if needed letters and numbers sections
+    if (c == 0 && (r > 0 && r < 9)) {m_get_square_numbers(square, r);}
+    if (r == 9 && (c > 0 && c < 9)) {m_get_square_letters(square, c);}
     return square;
 }
 
@@ -63,6 +62,12 @@ std::string UI::m_get_fg_color(const int piece_val) const {
 }
 std::string UI::m_get_piece(const int piece_val) const {
     return pieces_lookup[piece_val];
+}
+void UI::m_get_square_letters(std::string& square, const int r) const {
+    square[square.find("   ")+1] = m_letter_lookup[r-1];
+}
+void UI::m_get_square_numbers(std::string& square, const int c) const {
+    square[square.find("  ")+1] = m_number_lookup[8-c];
 }
 
 // Macros
