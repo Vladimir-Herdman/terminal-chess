@@ -13,7 +13,7 @@ namespace CONFIG {
         std::string w_bg; //white_square_background
         std::string w_fg; //white_pieces_foreground
 
-        std::string reset;
+        const std::string reset;
     };
 
     struct Pieces {
@@ -30,6 +30,10 @@ namespace CONFIG {
         std::string w_bishop;
         std::string w_queen;
         std::string w_king;
+
+        std::string edge_h;
+        std::string edge_v;
+        std::string space;
     };
 
     struct Options {

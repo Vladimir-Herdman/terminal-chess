@@ -1,6 +1,8 @@
 #include "ConfigData.hpp"
 
 // Define defaults here in case of no config file
+// NOTE: Treat this as the main place to always get such data, use pointers so
+    // if it changes it is reflected throughout
 namespace CONFIG {
     //TODO: Add letter and number color options
     Color COLORS {
@@ -29,6 +31,10 @@ namespace CONFIG {
         .w_bishop = " B ",
         .w_queen = " Q ",
         .w_king = " K ",
+
+        .edge_h = "   ",
+        .edge_v = "  ",
+        .space = "   ",
     };
 
     //TODO: add the options to the config file as changeable

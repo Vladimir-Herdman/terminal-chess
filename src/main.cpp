@@ -11,23 +11,15 @@
         // Show both sides at once
 #include <ios>
 
+#include "config/ConfigData.hpp"
+#include "game/game.hpp"
+#include "crossplatform/commandline.hpp"
+
 #ifdef TERMINALCHESS_INCLUDE_CONFIGREADER
     #include "config/ConfigReader.hpp"
 #endif
-#include "config/ConfigData.hpp"
-#include "game/game.hpp"
 
 auto& OPTIONS = CONFIG::OPTIONS;
-
-void command_line_arguments(int& argc, char *argv[]) {
-    for (int i = 1; i < argc; i++) {
-        std::string arg = argv[i];
-        switch (arg[1]) {
-            case 'v': OPTIONS.verbose = true; break; //verbose
-            case 'd': OPTIONS.dry_run = true; break; //defaults, so no config reading
-        }
-    }
-}
 
 int main(int argc, char *argv[]) {
     std::ios_base::sync_with_stdio(false);
