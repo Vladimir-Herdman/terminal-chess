@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#ifdef __unix__
+#if defined(__unix__) || defined(__APPLE__)
 #include <unistd.h>
 #endif
 
@@ -25,7 +25,7 @@ namespace {
 }
 // Parse command line arguments and change config as a result
 void command_line_arguments(int& argc, char *argv[]) {
-#ifdef __unix__
+#if defined(__unix__) || defined(__APPLE__)
     int opt;
     while ((opt = getopt(argc, argv, ":hdv")) != -1) {
         switch (opt) {

@@ -32,4 +32,3 @@ bin/
 # Personal
 .clangd
 compile_flags.txt
-test/

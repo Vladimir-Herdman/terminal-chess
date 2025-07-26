@@ -2,25 +2,37 @@ CXX = clang++
 CXXFLAGS = -std=c++20 -O2 -Isrc -Wall -Wextra -Wno-bitwise-op-parentheses
 CXXMACRODEF = -DTERMINALCHESS_INCLUDE_CONFIGREADER -DDEV_HELPERS_LATER_REMOVE
 
-SRC := ${shell find src/ -name '*.cpp'}
-OBJ := ${patsubst src/%.cpp,build/%.o,$(SRC)}
+SRC := $(shell find src/ -name '*.cpp')
+OBJ := $(patsubst src/%.cpp,build/main/%.o,$(SRC))
 
-all: ${OBJ}
+TESTCXXFLAGS := -std=c++20 -O2 -Isrc -Itest -Wall -Wextra -Wno-bitwise-op-parentheses
+
+TESTSRC := $(shell find test/ -name '*.cpp')
+TESTOBJ := $(patsubst test/%.cpp,build/test/%.o,$(TESTSRC))
+
+all: $(OBJ)
 	@mkdir -p ./bin
-	@${CXX} ${CXXFLAGS} ${CXXMACRODEF} ${OBJ} -o ./bin/main
+	@$(CXX) $(CXXFLAGS) $(CXXMACRODEF) $(OBJ) -o ./bin/main
 
-build/%.o: src/%.cpp
+build/main/%.o: src/%.cpp
 	@mkdir -p $(dir $@)
-	@${CXX} ${CXXFLAGS} ${CXXMACRODEF} -c $< -o $@
+	@$(CXX) $(CXXFLAGS) $(CXXMACRODEF) -c $< -o $@
 
-.PHONY: all clean test run
+test: $(TESTOBJ)
+	@$(CXX) $(TESTCXXFLAGS) $(TESTOBJ) -o bin/test
+	@echo '    compiled into bin/test'
+
+build/test/%.o: test/%.cpp
+	@mkdir -p $(dir $@)
+	@$(CXX) $(TESTCXXFLAGS) $(CXXMACRODEF) -c $< -o $@
+
+.PHONY: all clean run runtest
 clean: 
 	@echo '    cleaning build/ and bin/ directories...'
 	@rm -r build/ bin/ 2>/dev/null || true
 
-test:
-	@${CXX} ${CXXFLAGS} test/test.cpp -o bin/test
-	@./bin/test
-
 run: all
 	@./bin/main
+
+runtest: test
+	@./bin/test
