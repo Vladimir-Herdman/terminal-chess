@@ -19,7 +19,9 @@ Game::~Game() {
 
 void Game::begin() {
     while (m_game_running) {
+        m_refreshing_screen.store(true);
         m_print_board();
+        m_refreshing_screen.store(false);
         std::this_thread::sleep_for(std::chrono::seconds(2));
     }
 }
@@ -31,12 +33,15 @@ void Game::m_print_board() const {
 void Game::m_config_daemeon_function() {
     //m_config_daemon_running.store(CONFIG::run_daemon);
     m_config_daemon_running.store(true);
-    //m_config_daemon_sleep_time.store(CONFIG::daemon_sleep_milliseconds);
-    m_config_daemon_sleep_time.store(500);
+    m_config_daemon_sleep_time.store(CONFIG::daemon_sleep_milliseconds);
+
     while (m_config_daemon_running.load()) {
         std::this_thread::sleep_for(std::chrono::milliseconds(m_config_daemon_sleep_time.load()));
         if (m_has_config_file_changed()) {
+            m_refreshing_screen.store(true);
             ConfigReader();
+            m_print_board();
+            m_refreshing_screen.store(false);
         }
     }
 }

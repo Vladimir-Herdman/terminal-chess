@@ -23,6 +23,7 @@ private:
     bool m_has_config_file_changed() const;
     std::thread m_config_daemon;
     std::atomic<bool> m_config_daemon_running; //loaded later from defaults
+    std::atomic<bool> m_refreshing_screen = false;
     std::atomic<int> m_config_daemon_sleep_time;
 
     bool m_game_running = true;

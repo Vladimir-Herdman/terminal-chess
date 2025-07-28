@@ -11,7 +11,7 @@ namespace CONFIG {
     std::string config_path = "";
     //TODO: update_daemon settings
     bool run_daemon = false;
-    int daemon_sleep_milliseconds = 3000;
+    int daemon_sleep_milliseconds = 500;
 
     Color COLORS {
         .edge = "\x1B[48;2;048;046;043m",
