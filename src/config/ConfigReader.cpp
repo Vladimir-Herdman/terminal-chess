@@ -8,15 +8,19 @@
 #include <string>
 
 #include "ConfigMap.hpp"
+#include "config/ConfigData.hpp"
 
+// Publics
 ConfigReader::ConfigReader() {
     std::string line;
-    std::ifstream config_file(this->m_getConfigFile());
+    CONFIG::config_path = this->m_getConfigFile();
+    std::ifstream config_file(CONFIG::config_path);
 
     if (!config_file.is_open()) { 
         std::cerr << "config file not found" << '\n';
         return; 
     }
+    CONFIG::last_write = std::filesystem::last_write_time(CONFIG::config_path);
 
     // Get each line and put assertions to variable map for color configurations
     while (getline (config_file, line)) {
@@ -41,6 +45,7 @@ ConfigReader::ConfigReader() {
     config_file.close();
 }
 
+// Privates
 int ConfigReader::m_cleanLine(std::string& line) {
     line.erase(std::remove(line.begin(), line.end(), ' '), line.end());
     if (line.length() == 0) {return -1;}
@@ -55,7 +60,6 @@ int ConfigReader::m_cleanLine(std::string& line) {
     }
     return -1;
 }
-
 std::string ConfigReader::m_getConfigFile() {
     // different paths to check on OS
     #if defined(_WIN32)

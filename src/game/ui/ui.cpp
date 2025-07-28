@@ -52,7 +52,7 @@ void UI::print_board() const {
         }
         line += reset_color + '\n';
     }
-    std::cout << line;
+    std::cout << line << std::endl;
 }
 
 // Privates
@@ -71,17 +71,22 @@ std::string UI::m_get_fg_color(const int piece_val) const {
         return *(m_fg_lookup[SCI(colors::W_FG)]);
     } else if (piece_val < 12) { //pieces enum values 6-11 are black
         return *(m_fg_lookup[SCI(colors::B_FG)]);
+    } else if (piece_val == 12) { //values 13-14 are edge pieces
+        return *(m_fg_lookup[SCI(colors::LETTER_FG)]);
+    } else if (piece_val == 13) { //values 13-14 are edge pieces
+        return *(m_fg_lookup[SCI(colors::NUMBER_FG)]);
     }
     return *(m_fg_lookup[SCI(colors::RESET)]);
 }
 std::string UI::m_get_piece(const int piece_val) const {
     return *(m_pieces_lookup[piece_val]);
 }
-//TODO: If square is a known size, we can just subscript instead of 'find' where to place
 void UI::m_get_square_letters(std::string& square, const int r) const {
+    //std::cout << "\nValue find("   ") is:" << square.find("   ")+1<<"\n"; //DEBUG
     square[SCI(m_piece_index::EDGE_H)] = m_letter_lookup[r-1]; //square.find("   ")+1
 }
 void UI::m_get_square_numbers(std::string& square, const int c) const {
+    //std::cout << "\nValue find("  ") is:" << square.find("  ")+1<<"\n"; //DEBUG
     square[SCI(m_piece_index::EDGE_V)] = m_number_lookup[8-c]; //square.find("  ")+1
 }
 

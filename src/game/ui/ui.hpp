@@ -16,12 +16,13 @@ public:
     enum class pieces {
         W_PAWN = 0, W_KNIGHT, W_BISHOP, W_ROOK, W_QUEEN, W_KING,
         B_PAWN = 6, B_KNIGHT, B_BISHOP, B_ROOK, B_QUEEN, B_KING,
-        EDGE_H = 12, EDGE_V, SPACE
+        EDGE_H = 12, EDGE_V, SPACE,
     };
     enum class colors : int {
         W_BG = 1, W_FG,
         B_BG = 0, B_FG,
-        RESET
+        LETTER_FG = 3, NUMBER_FG,
+        RESET = 2,
     };
 
 private:
@@ -49,8 +50,9 @@ private:
         {&CONFIG::COLORS.edge, &CONFIG::COLORS.edge},
         {&CONFIG::COLORS.b_bg, &CONFIG::COLORS.w_bg},
     };
-    const std::string* m_fg_lookup[3] = {
-        &CONFIG::COLORS.reset, &CONFIG::COLORS.b_fg, &CONFIG::COLORS.w_fg
+    const std::string* m_fg_lookup[5] = {
+        &CONFIG::COLORS.reset, &CONFIG::COLORS.b_fg, &CONFIG::COLORS.w_fg,
+        &CONFIG::COLORS.letter, &CONFIG::COLORS.number,
     };
     const char m_letter_lookup[8] = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
     const char m_number_lookup[8] = {'1', '2', '3', '4', '5', '6', '7', '8'};

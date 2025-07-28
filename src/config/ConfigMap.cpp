@@ -68,8 +68,11 @@ namespace {
     }
 
     // Mapped functions
+    // TODO: Confirm putting in no value doesn't break it
 
     void board_edge(std::string& value) {clean_color(value); CONFIG::COLORS.edge = "\x1B[48;2" + value + 'm';}
+    void board_letter_foreground(std::string& value) {clean_color(value); CONFIG::COLORS.letter = "\x1B[38;2" + value + 'm';}
+    void board_number_foreground(std::string& value) {clean_color(value); CONFIG::COLORS.number = "\x1B[38;2" + value + 'm';}
 
     void b_bg(std::string& value) {clean_color(value); CONFIG::COLORS.b_bg = "\x1B[48;2" + value + 'm';}
     void b_fg(std::string& value) {clean_color(value); CONFIG::COLORS.b_fg = "\x1B[38;2" + value + 'm';}
@@ -94,6 +97,8 @@ namespace {
 
 const ConfigMap config_map = {
     {"board_edge", board_edge},
+    {"board_letter_foreground", board_letter_foreground},
+    {"board_number_foreground", board_number_foreground},
 
     {"black_square_background", b_bg},
     {"black_pieces_foreground", b_fg},

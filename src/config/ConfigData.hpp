@@ -1,11 +1,19 @@
 #ifndef TERMINALCHESS_CONFIG_CONFIGDATA_H
 #define TERMINALCHESS_CONFIG_CONFIGDATA_H
 
+#include <filesystem>
 #include <string>
 
 namespace CONFIG {
+    extern std::filesystem::file_time_type last_write;
+    extern std::string config_path;
+    extern bool run_daemon;
+    extern int daemon_sleep_milliseconds;
+
     struct Color {
         std::string edge;
+        std::string letter;
+        std::string number;
 
         std::string b_bg; //black_square_background
         std::string b_fg; //black_pieces_foreground
