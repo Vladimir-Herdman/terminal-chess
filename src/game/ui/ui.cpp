@@ -10,6 +10,8 @@
 namespace {
     using u64 = std::uint64_t;
 
+    constexpr auto& OPTIONS = CONFIG::OPTIONS;
+
     constexpr UI::pieces board_default[10][10] = {
         {UI::pieces::EDGE_V, UI::pieces::EDGE_H, UI::pieces::EDGE_H, UI::pieces::EDGE_H, UI::pieces::EDGE_H, UI::pieces::EDGE_H, UI::pieces::EDGE_H, UI::pieces::EDGE_H, UI::pieces::EDGE_H, UI::pieces::EDGE_V},
         {UI::pieces::EDGE_V, UI::pieces::B_ROOK, UI::pieces::B_KNIGHT, UI::pieces::B_BISHOP, UI::pieces::B_QUEEN, UI::pieces::B_KING, UI::pieces::B_BISHOP, UI::pieces::B_KNIGHT, UI::pieces::B_ROOK, UI::pieces::EDGE_V},
@@ -37,8 +39,8 @@ std::string UI::get_square(const int r, const int c) const {
     square += m_get_piece(piece_val);
     
     // get if needed letters and numbers sections
-    if (c == 0 && (r > 0 && r < 9)) {m_get_square_numbers(square, r);}
-    if (r == 9 && (c > 0 && c < 9)) {m_get_square_letters(square, c);}
+    if (OPTIONS.board_numbers && c == 0 && (r > 0 && r < 9)) {m_get_square_numbers(square, r);}
+    if (OPTIONS.board_letters && r == 9 && (c > 0 && c < 9)) {m_get_square_letters(square, c);}
     return square;
 }
 void UI::print_board() const {
