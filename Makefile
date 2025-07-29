@@ -19,6 +19,7 @@ build/main/%.o: src/%.cpp
 	@$(CXX) $(CXXFLAGS) $(CXXMACRODEF) -c $< -o $@
 
 test: $(TESTOBJ)
+	@mkdir -p ./bin
 	@$(CXX) $(TESTCXXFLAGS) $(TESTOBJ) -o bin/test
 	@echo '    compiled into bin/test'
 

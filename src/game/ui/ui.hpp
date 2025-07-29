@@ -1,6 +1,7 @@
 #ifndef TERMINALCHESS_GAME_UI_H
 #define TERMINALCHESS_GAME_UI_H
 
+#include <iostream> //REMOVE
 #include <string>
 
 #include "config/ConfigData.hpp"
@@ -9,6 +10,8 @@ void initializeWhiteBoard();
 
 class UI {
 public:
+    using VoidMemberFunc = void (UI::*)();
+
     UI();
     std::string get_square(const int r, const int c) const;
     void print_board() const;
@@ -26,6 +29,8 @@ public:
     };
 
 private:
+    friend class Game;
+
     void m_fill_initial_board();
     std::string m_get_bg_color(const int r, const int c) const;
     std::string m_get_fg_color(const int piece_val) const;
@@ -46,6 +51,17 @@ private:
         &CONFIG::PIECES.space
     };
     //TODO: Should I be naming with lookup first to better organize lookup tables?
+    //REMOVE BEGIN
+    void m_test1() {std::cout << "test1 func called";}
+    void m_test2() {std::cout << "test2 func called";}
+    void m_test3() {std::cout << "test3 func called";}
+    void m_test4() {std::cout << "test4 func called";}
+    //REMOVE END
+    //NOTE: Need this-> when calling as needs object
+    //(this->*m_lookup_movement_functions[0])();
+    const VoidMemberFunc m_lookup_movement_functions[4] = {
+        &UI::m_test1, &UI::m_test2, &UI::m_test3, &UI::m_test4
+    };
     const std::string* m_bg_lookup[2][2] = {
         {&CONFIG::COLORS.edge, &CONFIG::COLORS.edge},
         {&CONFIG::COLORS.b_bg, &CONFIG::COLORS.w_bg},
@@ -67,8 +83,6 @@ private:
     };
 
     pieces m_board[10][10];
-
-    friend class Game;
 };
 
 #endif //TERMINALCHESS_GAME_UI_H
