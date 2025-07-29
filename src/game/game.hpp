@@ -15,7 +15,8 @@ public:
     void begin();
 
 private:
-    void m_print_board() const;
+    void m_print_board();
+    void m_refresh_screen();
 
     UI ui;
 

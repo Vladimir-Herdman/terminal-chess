@@ -18,17 +18,25 @@ Game::~Game() {
 }
 
 void Game::begin() {
+    m_print_board();
     while (m_game_running) {
-        m_refreshing_screen.store(true);
-        m_print_board();
-        m_refreshing_screen.store(false);
-        std::this_thread::sleep_for(std::chrono::seconds(2));
+        //std::cout << test << std::flush;
+        std::string test;
+        std::cin >> test;
+        m_refresh_screen();
     }
 }
 
 // Privates
-void Game::m_print_board() const {
+void Game::m_print_board() {
+    m_refreshing_screen.store(true);
     ui.print_board();
+    m_refreshing_screen.store(false);
+}
+void Game::m_refresh_screen() {
+    m_refreshing_screen.store(true);
+    ui.refresh_board();
+    m_refreshing_screen.store(false);
 }
 void Game::m_config_daemeon_function() {
     m_config_daemon_running.store(CONFIG::run_daemon);
@@ -39,10 +47,8 @@ void Game::m_config_daemeon_function() {
         if (m_has_config_file_changed()) {
             m_config_daemon_sleep_time.store(CONFIG::daemon_sleep_milliseconds);
 
-            m_refreshing_screen.store(true);
             ConfigReader();
-            m_print_board();
-            m_refreshing_screen.store(false);
+            m_refresh_screen();
         }
     }
 }

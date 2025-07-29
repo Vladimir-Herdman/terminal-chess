@@ -15,6 +15,7 @@ public:
     UI();
     std::string get_square(const int r, const int c) const;
     void print_board() const;
+    void refresh_board() const;
 
     enum class pieces {
         W_PAWN = 0, W_KNIGHT, W_BISHOP, W_ROOK, W_QUEEN, W_KING,
