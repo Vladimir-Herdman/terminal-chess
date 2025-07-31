@@ -9,8 +9,7 @@
 
 namespace {
     using u64 = std::uint64_t;
-
-    constexpr auto& OPTIONS = CONFIG::OPTIONS;
+    using namespace CONFIG;
 
     constexpr UI::pieces board_default[10][10] = {
         {UI::pieces::EDGE_V, UI::pieces::EDGE_H, UI::pieces::EDGE_H, UI::pieces::EDGE_H, UI::pieces::EDGE_H, UI::pieces::EDGE_H, UI::pieces::EDGE_H, UI::pieces::EDGE_H, UI::pieces::EDGE_H, UI::pieces::EDGE_V},
@@ -41,12 +40,12 @@ std::string UI::get_square(const int r, const int c) const {
     // get if needed letters and numbers sections
     if (OPTIONS.board_numbers && c == 0 && (r > 0 && r < 9)) {m_get_square_numbers(square, r);}
     if (OPTIONS.board_letters && r == 9 && (c > 0 && c < 9)) {m_get_square_letters(square, c);}
-    return square + CONFIG::COLORS.reset;
+    return square + COLORS.reset;
 }
 void UI::print_board() const {
     std::string board_text = "";
     board_text.reserve(5000);
-    std::string reset_color = CONFIG::COLORS.reset;
+    std::string reset_color = COLORS.reset;
 
     for (int r = 0; r < 10; r++) {
         for (int c = 0; c < 10; c++) {
@@ -58,10 +57,11 @@ void UI::print_board() const {
 }
 void UI::refresh_board() const {
     //clear line, up ten, clear, start of line
-    std::cout << "\x1B[2K" << "\033[11A" << "\x1B[2K" << "\r";
+    std::cout << m_ansi.clear_line() << m_ansi.go_lines_up(11)
+              << m_ansi.clear_line() << "\r";
     print_board();
     //clear last input line and go back to beginning
-    std::cout << "                       \r" << std::flush;
+    std::cout << m_ansi.clear_line() << "\r" << std::flush;
 }
 
 // Privates

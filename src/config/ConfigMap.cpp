@@ -15,9 +15,7 @@ namespace {
     using ptr_configFunction = void (*)(std::string&);
     using ConfigMap = std::map<std::string, ptr_configFunction>;
 
-    constexpr auto& COLORS = CONFIG::COLORS;
-    constexpr auto& PIECES = CONFIG::PIECES;
-    constexpr auto& OPTIONS = CONFIG::OPTIONS;
+    using namespace CONFIG;
 
     // Helper functions
     void to_hex_color_code(std::string& value) { //ANSI
@@ -131,8 +129,8 @@ namespace {
     void options_board_letters(std::string& value) {boolean(OPTIONS.board_letters, value);}
     void options_board_numbers(std::string& value) {boolean(OPTIONS.board_numbers, value);}
 
-    void daemon_config_run(std::string& value) {boolean(CONFIG::run_daemon, value);}
-    void daemon_config_speed(std::string& value) {integer(CONFIG::daemon_sleep_milliseconds, value, 50);} //Stay above 50
+    void daemon_config_run(std::string& value) {boolean(DAEMON.run_daemon, value);}
+    void daemon_config_speed(std::string& value) {integer(DAEMON.daemon_sleep_milliseconds, value, 50);} //Stay above 50
 }
 
 const ConfigMap config_map = {

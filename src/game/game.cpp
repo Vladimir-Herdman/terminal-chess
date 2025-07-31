@@ -7,6 +7,10 @@
 #include "config/ConfigData.hpp"
 #include "config/ConfigReader.hpp"
 
+namespace {
+    using namespace CONFIG;
+}
+
 // Publics
 // Check options and configure game based off such configurations
 Game::Game(): m_config_daemon(&Game::m_config_daemeon_function, this) {}
@@ -20,10 +24,11 @@ Game::~Game() {
 void Game::begin() {
     m_print_board();
     while (m_game_running) {
-        //std::cout << test << std::flush;
-        std::string test;
-        std::cin >> test;
+        //m_input();
         m_refresh_screen();
+        //std::string input;
+        //std::cin >> test;
+        //if (test == "test") {std::cout<<"\nYou got it right!\033[01A\r";}
     }
 }
 
@@ -38,26 +43,37 @@ void Game::m_refresh_screen() {
     ui.refresh_board();
     m_refreshing_screen.store(false);
 }
+
+inline void Game::m_input() {
+    if (OPTIONS.input_interactive) {m_input_interactive();}
+    else {m_input_typed();}
+}
+void Game::m_input_typed() const {
+
+}
+void Game::m_input_interactive() const {
+
+}
+
 void Game::m_config_daemeon_function() {
-    m_config_daemon_running.store(CONFIG::run_daemon);
-    m_config_daemon_sleep_time.store(CONFIG::daemon_sleep_milliseconds);
+    m_config_daemon_running.store(DAEMON.run_daemon);
+    m_config_daemon_sleep_time.store(DAEMON.daemon_sleep_milliseconds);
 
     while (m_config_daemon_running.load()) {
         std::this_thread::sleep_for(std::chrono::milliseconds(m_config_daemon_sleep_time.load()));
         if (m_has_config_file_changed()) {
-            m_config_daemon_sleep_time.store(CONFIG::daemon_sleep_milliseconds);
-
             ConfigReader();
+            m_config_daemon_sleep_time.store(DAEMON.daemon_sleep_milliseconds);
             m_refresh_screen();
         }
     }
 }
 bool Game::m_has_config_file_changed() const {
-    if (! std::filesystem::exists(CONFIG::config_path)) {return false;}
+    if (! std::filesystem::exists(DAEMON.config_path)) {return false;}
 
-    const auto file_now_last_write = std::filesystem::last_write_time(CONFIG::config_path);
-    if (file_now_last_write > CONFIG::last_write) {
-        CONFIG::last_write = file_now_last_write;
+    const auto file_now_last_write = std::filesystem::last_write_time(DAEMON.config_path);
+    if (file_now_last_write > DAEMON.last_write) {
+        DAEMON.last_write = file_now_last_write;
         return true;
     }
     return false;

@@ -1,18 +1,11 @@
 #include "ConfigData.hpp"
 
 #include <ctime>
-#include <filesystem>
 
 // Define defaults here in case of no config file
 // NOTE: Treat this as the main place to always get such data, use pointers so
     // if it changes it is reflected throughout
 namespace CONFIG {
-    std::filesystem::file_time_type last_write = std::chrono::file_clock::now();
-    std::string config_path = "";
-    //TODO: update_daemon settings
-    bool run_daemon = false;
-    int daemon_sleep_milliseconds = 500;
-
     Color COLORS {
         .edge = "\x1B[48;2;048;046;043m",
         .letter = "\x1B[38;2;255;255;255m",
@@ -51,7 +44,18 @@ namespace CONFIG {
     Options OPTIONS {
         .verbose = false,
         .dry_run = false,
+
         .board_letters = true,
         .board_numbers = true,
+
+        .input_interactive = false,
+    };
+
+    Daemon DAEMON {
+        .last_write = std::chrono::file_clock::now(),
+        .config_path = "",
+        //TODO: update_daemon settings
+        .run_daemon = false,
+        .daemon_sleep_milliseconds = 500,
     };
 };

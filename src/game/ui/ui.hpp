@@ -5,13 +5,12 @@
 #include <string>
 
 #include "config/ConfigData.hpp"
+#include "types/classes.hpp"
 
 void initializeWhiteBoard();
 
 class UI {
 public:
-    using VoidMemberFunc = void (UI::*)();
-
     UI();
     std::string get_square(const int r, const int c) const;
     void print_board() const;
@@ -22,7 +21,7 @@ public:
         B_PAWN = 6, B_KNIGHT, B_BISHOP, B_ROOK, B_QUEEN, B_KING,
         EDGE_H = 12, EDGE_V, SPACE,
     };
-    enum class colors : int {
+    enum class colors {
         W_BG = 1, W_FG,
         B_BG = 0, B_FG,
         LETTER_FG = 3, NUMBER_FG,
@@ -60,7 +59,7 @@ private:
     //REMOVE END
     //NOTE: Need this-> when calling as needs object
     //(this->*m_lookup_movement_functions[0])();
-    const VoidMemberFunc m_lookup_movement_functions[4] = {
+    const VoidMemberFuncPtr<UI> m_lookup_movement_functions[4] = {
         &UI::m_test1, &UI::m_test2, &UI::m_test3, &UI::m_test4
     };
     const std::string* m_bg_lookup[2][2] = {
@@ -73,6 +72,11 @@ private:
     };
     const char m_letter_lookup[8] = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
     const char m_number_lookup[8] = {'1', '2', '3', '4', '5', '6', '7', '8'};
+
+    struct {
+        inline std::string clear_line() const {return "\x1B[2K";};
+        inline std::string go_lines_up(const int lines) const {return "\033["+std::to_string(lines)+"A";};
+    } m_ansi;
 
     const struct {
         bool letters = CONFIG::OPTIONS.board_letters;

@@ -18,6 +18,10 @@ private:
     void m_print_board();
     void m_refresh_screen();
 
+    inline void m_input();
+    void m_input_typed() const;
+    void m_input_interactive() const;
+
     UI ui;
 
     void m_config_daemeon_function();

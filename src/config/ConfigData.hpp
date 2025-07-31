@@ -47,13 +47,24 @@ namespace CONFIG {
     struct Options {
         bool verbose;
         bool dry_run;
+
         bool board_letters;
         bool board_numbers;
+        
+        bool input_interactive;
+    };
+
+    struct Daemon {
+        std::filesystem::file_time_type last_write;
+        std::string config_path;
+        bool run_daemon;
+        int daemon_sleep_milliseconds;
     };
 
     extern Color COLORS;
     extern Pieces PIECES;
     extern Options OPTIONS;
+    extern Daemon DAEMON;
 };
 
 #endif //TERMINALCHESS_CONFIG_CONFIGDATA_H

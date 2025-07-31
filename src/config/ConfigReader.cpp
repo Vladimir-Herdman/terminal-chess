@@ -10,17 +10,21 @@
 #include "ConfigMap.hpp"
 #include "config/ConfigData.hpp"
 
+namespace {
+    using namespace CONFIG;
+}
+
 // Publics
 ConfigReader::ConfigReader() {
     std::string line;
-    CONFIG::config_path = this->m_getConfigFile();
-    std::ifstream config_file(CONFIG::config_path);
+    DAEMON.config_path = this->m_getConfigFile();
+    std::ifstream config_file(DAEMON.config_path);
 
     if (!config_file.is_open()) { 
         std::cerr << "config file not found" << '\n';
         return; 
     }
-    CONFIG::last_write = std::filesystem::last_write_time(CONFIG::config_path);
+    DAEMON.last_write = std::filesystem::last_write_time(DAEMON.config_path);
 
     // Get each line and put assertions to variable map for color configurations
     while (getline (config_file, line)) {
