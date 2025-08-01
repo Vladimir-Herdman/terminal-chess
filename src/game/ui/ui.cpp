@@ -73,30 +73,30 @@ void UI::m_fill_initial_board() {
 //NOTE: Because of pointers so CONFIG can change at runtime, dereference such variables
 std::string UI::m_get_bg_color(const int r, const int c) const {
     const bool is_board_edge = (r==0||r==9||c==0||c==9);
-    return *(m_bg_lookup[is_board_edge?0:1][(c+r)%2]); //dirty math here, beware: checkered
+    return *(m_lookup_bg[is_board_edge?0:1][(c+r)%2]); //dirty math here, beware: checkered
 }
 std::string UI::m_get_fg_color(const int piece_val) const {
     if (piece_val < 6) { //pieces enum values 0-5 are white pieces
-        return *(m_fg_lookup[SCI(colors::W_FG)]);
+        return *(m_lookup_fg[SCI(colors::W_FG)]);
     } else if (piece_val < 12) { //pieces enum values 6-11 are black
-        return *(m_fg_lookup[SCI(colors::B_FG)]);
+        return *(m_lookup_fg[SCI(colors::B_FG)]);
     } else if (piece_val == 12) { //values 13-14 are edge pieces
-        return *(m_fg_lookup[SCI(colors::LETTER_FG)]);
+        return *(m_lookup_fg[SCI(colors::LETTER_FG)]);
     } else if (piece_val == 13) { //values 13-14 are edge pieces
-        return *(m_fg_lookup[SCI(colors::NUMBER_FG)]);
+        return *(m_lookup_fg[SCI(colors::NUMBER_FG)]);
     }
-    return *(m_fg_lookup[SCI(colors::RESET)]);
+    return *(m_lookup_fg[SCI(colors::RESET)]);
 }
 std::string UI::m_get_piece(const int piece_val) const {
-    return *(m_pieces_lookup[piece_val]);
+    return *(m_lookup_pieces[piece_val]);
 }
 void UI::m_get_square_letters(std::string& square, const int r) const {
     //std::cout << "\nValue find("   ") is:" << square.find("   ")+1<<"\n"; //DEBUG
-    square[SCI(m_piece_index::EDGE_H)] = m_letter_lookup[r-1]; //square.find("   ")+1
+    square[SCI(m_piece_index::EDGE_H)] = m_lookup_letter[r-1]; //square.find("   ")+1
 }
 void UI::m_get_square_numbers(std::string& square, const int c) const {
     //std::cout << "\nValue find("  ") is:" << square.find("  ")+1<<"\n"; //DEBUG
-    square[SCI(m_piece_index::EDGE_V)] = m_number_lookup[8-c]; //square.find("  ")+1
+    square[SCI(m_piece_index::EDGE_V)] = m_lookup_number[8-c]; //square.find("  ")+1
 }
 
 // Macros

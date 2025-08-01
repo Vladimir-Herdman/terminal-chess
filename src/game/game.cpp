@@ -7,6 +7,8 @@
 #include "config/ConfigData.hpp"
 #include "config/ConfigReader.hpp"
 
+#define SCI(arg) static_cast<int>(arg)
+
 namespace {
     using namespace CONFIG;
 }
@@ -24,8 +26,9 @@ Game::~Game() {
 void Game::begin() {
     m_print_board();
     while (m_game_running) {
-        //m_input();
-        m_refresh_screen();
+        if(m_input()) {
+            m_refresh_screen();
+        }
         //std::string input;
         //std::cin >> test;
         //if (test == "test") {std::cout<<"\nYou got it right!\033[01A\r";}
@@ -44,15 +47,16 @@ void Game::m_refresh_screen() {
     m_refreshing_screen.store(false);
 }
 
-inline void Game::m_input() {
-    if (OPTIONS.input_interactive) {m_input_interactive();}
-    else {m_input_typed();}
+int Game::m_input() {
+    if (OPTIONS.input_interactive) {return m_input_interactive();}
+    return m_input_typed();
 }
-void Game::m_input_typed() const {
-
+int Game::m_input_typed() const {
+    //if (typed == highlight choice) {return DONT_REFRESH}
+    return SCI(m_input_status::REFRESH);
 }
-void Game::m_input_interactive() const {
-
+int Game::m_input_interactive() const {
+    return SCI(m_input_status::DONT_REFRESH);
 }
 
 void Game::m_config_daemeon_function() {
@@ -78,3 +82,5 @@ bool Game::m_has_config_file_changed() const {
     }
     return false;
 }
+
+#undef SCI

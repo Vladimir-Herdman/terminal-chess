@@ -18,11 +18,15 @@ private:
     void m_print_board();
     void m_refresh_screen();
 
-    inline void m_input();
-    void m_input_typed() const;
-    void m_input_interactive() const;
+    int m_input();
+    int m_input_typed() const;
+    int m_input_interactive() const;
+    enum class m_input_status {
+        REFRESH = 0, DONT_REFRESH
+    };
 
     UI ui;
+
 
     void m_config_daemeon_function();
     bool m_has_config_file_changed() const;

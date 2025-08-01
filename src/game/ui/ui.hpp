@@ -40,7 +40,7 @@ private:
 
     //TODO: Use references and pointers for config options to later allow deamon
         //thread to update based on config file change live-time
-    const std::string* m_pieces_lookup[15] = {
+    const std::string* m_lookup_pieces[15] = {
         &CONFIG::PIECES.w_pawn, &CONFIG::PIECES.w_knight,
         &CONFIG::PIECES.w_bishop, &CONFIG::PIECES.w_rook,
         &CONFIG::PIECES.w_queen, &CONFIG::PIECES.w_king,
@@ -62,16 +62,16 @@ private:
     const VoidMemberFuncPtr<UI> m_lookup_movement_functions[4] = {
         &UI::m_test1, &UI::m_test2, &UI::m_test3, &UI::m_test4
     };
-    const std::string* m_bg_lookup[2][2] = {
+    const std::string* m_lookup_bg[2][2] = {
         {&CONFIG::COLORS.edge, &CONFIG::COLORS.edge},
         {&CONFIG::COLORS.b_bg, &CONFIG::COLORS.w_bg},
     };
-    const std::string* m_fg_lookup[5] = {
+    const std::string* m_lookup_fg[5] = {
         &CONFIG::COLORS.reset, &CONFIG::COLORS.b_fg, &CONFIG::COLORS.w_fg,
         &CONFIG::COLORS.letter, &CONFIG::COLORS.number,
     };
-    const char m_letter_lookup[8] = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
-    const char m_number_lookup[8] = {'1', '2', '3', '4', '5', '6', '7', '8'};
+    const char m_lookup_letter[8] = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
+    const char m_lookup_number[8] = {'1', '2', '3', '4', '5', '6', '7', '8'};
 
     struct {
         inline std::string clear_line() const {return "\x1B[2K";};
