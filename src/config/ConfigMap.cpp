@@ -12,8 +12,8 @@
 
 namespace {
     // using declarations
-    using Ptr_ConfigFunction = void (*)(std::string&);
-    using ConfigMap = std::map<std::string, Ptr_ConfigFunction>;
+    using ConfigFunctionPtr = void (*)(std::string&);
+    using ConfigMap = std::map<std::string, ConfigFunctionPtr>;
 
     using namespace CONFIG;
 
