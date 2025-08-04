@@ -15,21 +15,21 @@ public:
     void begin();
 
 private:
-    void m_print_board();
-    void m_refresh_screen();
+    void m_printBoard();
+    void m_refreshScreen();
 
     int m_input();
-    int m_input_typed() const;
-    int m_input_interactive() const;
-    enum class m_input_status {
+    int m_inputTyped() const;
+    int m_inputInteractive() const;
+    enum class m_InputStatus {
         REFRESH = 0, DONT_REFRESH
     };
 
     UI ui;
 
 
-    void m_config_daemeon_function();
-    bool m_has_config_file_changed() const;
+    void m_configDaemonFunction();
+    bool m_hasConfigFileChanged() const;
     std::thread m_config_daemon;
     std::atomic<bool> m_config_daemon_running; //loaded later from defaults
     std::atomic<bool> m_refreshing_screen = false;

@@ -229,9 +229,9 @@ namespace {
 //TODO: Fix with Side once SideCompiled is finished
 namespace BITBOARDS {
     namespace PRECOMPILED {
-        constexpr std::array<u64, 64> kingMovesLookup = getKingMovesLookupTable();
-        constexpr std::array<u64, 64> knightMovesLookup = getKnightMovesLookupTable();
-        constexpr std::array<u64, 64> pawnAttackLookup = getPawnAttackLookupTable();  //TODO: Use some white/black finagling to figure out attack index at runtime
+        constexpr std::array<u64, 64> lookup_king_moves = getKingMovesLookupTable();
+        constexpr std::array<u64, 64> lookup_knight_moves = getKnightMovesLookupTable();
+        constexpr std::array<u64, 64> lookup_pawn_attacks = getPawnAttackLookupTable();  //TODO: Use some white/black finagling to figure out attack index at runtime
     }
 
     Side white = {
@@ -327,19 +327,19 @@ void bitboardDevFunc() {
     static_assert(white_compiled.getAllQueenMoves(black_compiled) >= 0, "Not compile-time");
 
     std::cout << '\n';
-    printBitBoard(BITBOARDS::PRECOMPILED::kingMovesLookup[26]);
-    static_assert(BITBOARDS::PRECOMPILED::kingMovesLookup[26] >= 0, "Not compile-time");
+    printBitBoard(BITBOARDS::PRECOMPILED::lookup_king_moves[26]);
+    static_assert(BITBOARDS::PRECOMPILED::lookup_king_moves[26] >= 0, "Not compile-time");
 
     std::cout << '\n';
-    printBitBoard(BITBOARDS::PRECOMPILED::knightMovesLookup[63]);
-    static_assert(BITBOARDS::PRECOMPILED::knightMovesLookup[63] >= 0, "Not compile-time");
+    printBitBoard(BITBOARDS::PRECOMPILED::lookup_knight_moves[63]);
+    static_assert(BITBOARDS::PRECOMPILED::lookup_knight_moves[63] >= 0, "Not compile-time");
 
     //std::cout << '\n';
     //printBitBoard(white_compiled.getAllPawnMoves(black_compiled));
     //static_assert(white_compiled.getAllPawnMoves(black_compiled) >= 0, "Not compile-time");
 
     std::cout << '\n';
-    printBitBoard(BITBOARDS::PRECOMPILED::pawnAttackLookup[0]);
-    static_assert(BITBOARDS::PRECOMPILED::pawnAttackLookup[0] > 0, "not compile-time");
+    printBitBoard(BITBOARDS::PRECOMPILED::lookup_pawn_attacks[0]);
+    static_assert(BITBOARDS::PRECOMPILED::lookup_pawn_attacks[0] > 0, "not compile-time");
 }
 #endif

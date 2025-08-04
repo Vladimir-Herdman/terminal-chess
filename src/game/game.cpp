@@ -15,7 +15,7 @@ namespace {
 
 // Publics
 // Check options and configure game based off such configurations
-Game::Game(): m_config_daemon(&Game::m_config_daemeon_function, this) {}
+Game::Game(): m_config_daemon(&Game::m_configDaemonFunction, this) {}
 
 Game::~Game() {
     if (m_config_daemon.joinable()) {
@@ -24,10 +24,10 @@ Game::~Game() {
 }
 
 void Game::begin() {
-    m_print_board();
+    m_printBoard();
     while (m_game_running) {
         if(m_input()) {
-            m_refresh_screen();
+            m_refreshScreen();
         }
         //std::string input;
         //std::cin >> test;
@@ -36,43 +36,43 @@ void Game::begin() {
 }
 
 // Privates
-void Game::m_print_board() {
+void Game::m_printBoard() {
     m_refreshing_screen.store(true);
-    ui.print_board();
+    ui.printBoard();
     m_refreshing_screen.store(false);
 }
-void Game::m_refresh_screen() {
+void Game::m_refreshScreen() {
     m_refreshing_screen.store(true);
-    ui.refresh_board();
+    ui.refreshBoard();
     m_refreshing_screen.store(false);
 }
 
 int Game::m_input() {
-    if (OPTIONS.input_interactive) {return m_input_interactive();}
-    return m_input_typed();
+    if (OPTIONS.input_interactive) {return m_inputInteractive();}
+    return m_inputTyped();
 }
-int Game::m_input_typed() const {
+int Game::m_inputTyped() const {
     //if (typed == highlight choice) {return DONT_REFRESH}
-    return SCI(m_input_status::REFRESH);
+    return SCI(m_InputStatus::REFRESH);
 }
-int Game::m_input_interactive() const {
-    return SCI(m_input_status::DONT_REFRESH);
+int Game::m_inputInteractive() const {
+    return SCI(m_InputStatus::DONT_REFRESH);
 }
 
-void Game::m_config_daemeon_function() {
+void Game::m_configDaemonFunction() {
     m_config_daemon_running.store(DAEMON.run_daemon);
     m_config_daemon_sleep_time.store(DAEMON.daemon_sleep_milliseconds);
 
     while (m_config_daemon_running.load()) {
         std::this_thread::sleep_for(std::chrono::milliseconds(m_config_daemon_sleep_time.load()));
-        if (m_has_config_file_changed()) {
+        if (m_hasConfigFileChanged()) {
             ConfigReader();
             m_config_daemon_sleep_time.store(DAEMON.daemon_sleep_milliseconds);
-            m_refresh_screen();
+            m_refreshScreen();
         }
     }
 }
-bool Game::m_has_config_file_changed() const {
+bool Game::m_hasConfigFileChanged() const {
     if (! std::filesystem::exists(DAEMON.config_path)) {return false;}
 
     const auto file_now_last_write = std::filesystem::last_write_time(DAEMON.config_path);

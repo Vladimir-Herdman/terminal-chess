@@ -12,16 +12,16 @@ void initializeWhiteBoard();
 class UI {
 public:
     UI();
-    std::string get_square(const int r, const int c) const;
-    void print_board() const;
-    void refresh_board() const;
+    std::string getSquare(const int r, const int c) const;
+    void printBoard() const;
+    void refreshBoard() const;
 
-    enum class pieces {
+    enum class Pieces {
         W_PAWN = 0, W_KNIGHT, W_BISHOP, W_ROOK, W_QUEEN, W_KING,
         B_PAWN = 6, B_KNIGHT, B_BISHOP, B_ROOK, B_QUEEN, B_KING,
         EDGE_H = 12, EDGE_V, SPACE,
     };
-    enum class colors {
+    enum class Colors {
         W_BG = 1, W_FG,
         B_BG = 0, B_FG,
         LETTER_FG = 3, NUMBER_FG,
@@ -31,12 +31,12 @@ public:
 private:
     friend class Game;
 
-    void m_fill_initial_board();
-    std::string m_get_bg_color(const int r, const int c) const;
-    std::string m_get_fg_color(const int piece_val) const;
-    std::string m_get_piece(const int piece_val) const;
-    void m_get_square_letters(std::string& square, const int r) const;
-    void m_get_square_numbers(std::string& square, const int c) const;
+    void m_fillInitialBoard();
+    std::string m_getBgColor(const int r, const int c) const;
+    std::string m_getFgColor(const int piece_val) const;
+    std::string m_getPiece(const int piece_val) const;
+    void m_getSquareLetters(std::string& square, const int r) const;
+    void m_getSquareNumbers(std::string& square, const int c) const;
 
     //TODO: Use references and pointers for config options to later allow deamon
         //thread to update based on config file change live-time
@@ -74,8 +74,8 @@ private:
     const char m_lookup_number[8] = {'1', '2', '3', '4', '5', '6', '7', '8'};
 
     struct {
-        inline std::string clear_line() const {return "\x1B[2K";};
-        inline std::string go_lines_up(const int lines) const {return "\033["+std::to_string(lines)+"A";};
+        inline std::string clearLine() const {return "\x1B[2K";};
+        inline std::string goLinesUp(const int lines) const {return "\033["+std::to_string(lines)+"A";};
     } m_ansi;
 
     const struct {
@@ -83,11 +83,11 @@ private:
         bool numbers = CONFIG::OPTIONS.board_numbers;
     } m_options;
 
-    enum class m_piece_index {
+    enum class m_PieceIndex {
         EDGE_H = 39, EDGE_V = 39
     };
 
-    pieces m_board[10][10];
+    Pieces m_board[10][10];
 };
 
 #endif //TERMINALCHESS_GAME_UI_H
