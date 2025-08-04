@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
     std::ios_base::sync_with_stdio(false);
 
     // Before config file, direct chess command line options are applied
-    command_line_arguments(argc, argv);
+    commandLineArguments(argc, argv);
 
     // Read in config file, will overwrite any previous command line arguments
     #ifdef TERMINALCHESS_INCLUDE_CONFIGREADER

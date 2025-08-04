@@ -18,13 +18,13 @@ namespace {
         std::cout << "options under the 'options_*' style, examples in 'example_config/chess.conf'.";
         exit(0);
     }
-    void unknown_option(const char opt) {
+    void unknownOption(const char opt) {
         std::cout << "Invalid command line argument passed: -" << opt << '\n';
         exit(1);
     }
 }
 // Parse command line arguments and change config as a result
-void command_line_arguments(int& argc, char *argv[]) {
+void commandLineArguments(int& argc, char *argv[]) {
 #if defined(__unix__) || defined(__APPLE__)
     int opt;
     while ((opt = getopt(argc, argv, ":hdv")) != -1) {
@@ -36,7 +36,7 @@ void command_line_arguments(int& argc, char *argv[]) {
             case 'v': //verbose
                 CONFIG::OPTIONS.verbose = true; break;
             case '?':
-                unknown_option(optopt); break;
+                unknownOption(optopt); break;
         }
     }
 #else
@@ -46,7 +46,7 @@ void command_line_arguments(int& argc, char *argv[]) {
             case 'h': usage(); break; 
             case 'd': CONFIG::OPTIONS.dry_run = true; break; //defaults, so no config reading
             case 'v': CONFIG::OPTIONS.verbose = true; break; //verbose
-            default: unknown_option(arg);
+            default: unknownOption(arg);
         }
     }
 #endif
