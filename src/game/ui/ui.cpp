@@ -1,6 +1,7 @@
 #include "game/ui/ui.hpp"
 
 #include <algorithm>
+#include <cctype>
 #include <cstdint>
 #include <iostream>
 #include <string>
@@ -54,6 +55,22 @@ void UI::printBoard() const {
         board_text += reset_color + '\n';
     }
     std::cout << board_text << std::flush;
+}
+void UI::highlight(const std::string input) const {
+    int r, c;
+    const char ch_one = input[1];
+    const char ch_two = input[2];
+
+    // r and c are 1 indexed so it matches with our printed grid
+    if (std::isalpha(ch_one)){
+        r = SCI(ch_two)-48;
+        c = SCI(std::tolower(ch_one))-96;
+    } else {
+        r = SCI(ch_one)-48;
+        c = SCI(std::tolower(ch_two))-96;
+    }
+    //TODO: highlight the selected row now
+        // might involve cursor knowledge
 }
 void UI::refreshBoard() const {
     //clear line, up ten, clear, start of line

@@ -14,6 +14,7 @@ public:
     UI();
     std::string getSquare(const int r, const int c) const;
     void printBoard() const;
+    void highlight(const std::string input) const;
     void refreshBoard() const;
 
     enum class Pieces {

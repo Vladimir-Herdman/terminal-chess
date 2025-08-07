@@ -22,7 +22,7 @@ private:
     int m_inputTyped() const;
     int m_inputInteractive() const;
     enum class m_InputStatus {
-        REFRESH = 0, DONT_REFRESH
+        DONT_REFRESH = 0, FULL_REFRESH = 1
     };
 
     UI ui;

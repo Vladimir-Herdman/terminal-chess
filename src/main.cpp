@@ -33,6 +33,7 @@ int main(int argc, char *argv[]) {
     #endif
 
     // Game will check options and configure, then begin will start everything to stdout
+    // Game cleans up itself
     Game().begin();
 
     //#ifdef DEV_HELPERS_LATER_REMOVE

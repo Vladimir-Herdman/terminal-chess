@@ -15,6 +15,9 @@ namespace CONFIG {
         std::string letter;
         std::string number;
 
+        std::string highlight_main;
+        std::string highlight_around;
+
         std::string b_bg; //black_square_background
         std::string b_fg; //black_pieces_foreground
 

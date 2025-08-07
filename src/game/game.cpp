@@ -1,5 +1,6 @@
 #include "game.hpp"
 
+#include <cctype>
 #include <chrono>
 #include <filesystem>
 #include <thread>
@@ -53,7 +54,14 @@ int Game::m_input() {
 }
 int Game::m_inputTyped() const {
     //if (typed == highlight choice) {return DONT_REFRESH}
-    return SCI(m_InputStatus::REFRESH);
+    std::string input;
+    std::cin >> input;
+
+    if (input.length() == 3 && (input[0] == 'h' || input[0] == 'H')){ //highlight square
+        ui.highlight(input);
+        return SCI(m_InputStatus::DONT_REFRESH);
+    }
+    return SCI(m_InputStatus::FULL_REFRESH);
 }
 int Game::m_inputInteractive() const {
     return SCI(m_InputStatus::DONT_REFRESH);
