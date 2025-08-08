@@ -110,6 +110,9 @@ namespace {
     void b_bg(std::string& value) {colorBg(COLORS.b_bg, value);}
     void b_fg(std::string& value) {colorFg(COLORS.b_fg, value);}
 
+    void highlightMain(std::string& value) {colorBg(COLORS.highlight_main, value);}
+    void highlightAround(std::string& value) {colorBg(COLORS.highlight_around, value);}
+
     void b_pawn(std::string& value) {piece(PIECES.b_pawn, value);}
     void b_rook(std::string& value) {piece(PIECES.b_rook, value);}
     void b_knight(std::string& value) {piece(PIECES.b_knight, value);}
@@ -139,6 +142,9 @@ const ConfigMap config_map = {
     {"board_edge", boardEdge},
     {"board_letter_foreground", boardLetterForeground},
     {"board_number_foreground", boardNumberForeground},
+
+    {"highlight_main", highlightMain},
+    {"highlight_around", highlightAround},
 
     {"black_square_background", b_bg},
     {"black_pieces_foreground", b_fg},
