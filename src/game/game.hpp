@@ -3,6 +3,7 @@
 
 #include <atomic>
 #include <condition_variable>
+#include <map>
 #include <mutex>
 #include <thread>
 
@@ -36,8 +37,8 @@ private:
     UI ui;
 
     bool m_game_running = true;
-    const BITBOARDS::Side& white = BITBOARDS::white;
-    const BITBOARDS::Side& black = BITBOARDS::black;
+    const BITBOARDS::Side& m_white = BITBOARDS::white;
+    const BITBOARDS::Side& m_black = BITBOARDS::black;
 
     const std::map<std::string, int> m_map_input = {
         {"refresh", static_cast<int>(UI::InputStatus::FULL_REFRESH)},

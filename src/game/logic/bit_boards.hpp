@@ -3,6 +3,8 @@
 
 #include <cstdint>
 
+#include "types/moves.hpp"
+
 namespace BITBOARDS {
     //TODO: Fix this once SideCompiled is finished
     struct Side {
@@ -12,7 +14,13 @@ namespace BITBOARDS {
         uint64_t bishops;
         uint64_t queens;
         uint64_t king;
-        Side& opposing;
+        const char side;
+        const Side& opposing;
+
+        uint64_t getAllPieces() const;
+        uint64_t getAllPawnMoves() const;
+
+        MoveResult makePawnMove(const int r, const int c);
     };
 
     //TODO:

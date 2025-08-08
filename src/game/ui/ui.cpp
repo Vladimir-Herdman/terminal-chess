@@ -7,6 +7,7 @@
 #include <string>
 
 #define SCI(arg) static_cast<int>(arg)
+#define UI_IS(arg) static_cast<int>(UI::InputStatus::arg)
 
 namespace {
     using u64 = std::uint64_t;
@@ -58,33 +59,47 @@ void UI::printBoard() const {
 }
 int UI::highlight(const std::string input) const {
     int r, c;
-    const char ch_one = input[1];
-    const char ch_two = input[2];
+    const char ch_one = std::tolower(input[1]);
+    const char ch_two = std::tolower(input[2]);
 
     // r and c are 1 indexed so it matches with our printed grid
     if (std::isalpha(ch_one)){
-        r = SCI(ch_two)-48;
-        c = SCI(ch_one)-96;
+        r = SCI(ch_two)-m_normalize.number;
+        c = SCI(ch_one)-m_normalize.lowercase_letter;
     } else {
-        r = SCI(ch_one)-48;
-        c = SCI(ch_two)-96;
+        r = SCI(ch_one)-m_normalize.number;
+        c = SCI(ch_two)-m_normalize.lowercase_letter;
     }
 
     // guard against something like 'hcw' where out of board bounds
-    if (c > 8 || c < 1 || r > 8 || r < 1) {
+    if (m_outOfBoardBounds(r, c)) {
         inputImproper();
-        return SCI(InputStatus::DONT_REFRESH);
+        return UI_IS(DONT_REFRESH);
     }
 
     m_highlight(r, c);
-    return SCI(InputStatus::DONT_REFRESH);
+    return UI_IS(DONT_REFRESH);
 }
-void UI::inputImproper() const {std::cout << m_ansi.goLinesUp(1) << m_ansi.clearLine() << "\r";}
+void UI::inputImproper() const {
+    std::cout << "Improper move/input";
+    std::cout << m_ansi.goLinesUp(1) << m_ansi.clearLine() << "\r";
+}
 void UI::refreshBoard() const {
-    //clear line, up ten, clear, start of line
-    std::cout << m_ansi.goLinesUp(11);
+    std::cout << m_ansi.goLinesUp(11) << "\r";
     printBoard();
-    std::cout << m_ansi.clearLine() << "\r" << std::flush;
+    std::cout << m_ansi.goLinesDown(1) << m_ansi.clearLine() << m_ansi.goLinesUp(1)
+              << m_ansi.clearLine() << "\r" << std::flush;
+}
+int UI::makeChessNotationMove(const std::string input, const int input_length) {
+    switch (input_length) {
+        case 2:
+            return m_pawnMove(input);
+        case 3: //other piece move
+            return m_pieceMove(input);
+        case 4: //taking a piece
+            return m_takePiece(input);
+    }
+    return UI_IS(IMPROPER_INPUT);
 }
 
 // Privates
@@ -133,6 +148,33 @@ void UI::m_getSquareNumbers(std::string& square, const int c) const {
     //std::cout << "\nValue find("  ") is:" << square.find("  ")+1<<"\n"; //DEBUG
     square[SCI(m_PieceIndex::EDGE_V)] = m_lookup_number[8-c]; //square.find("  ")+1
 }
+inline bool UI::m_outOfBoardBounds(const int r, const int c) const {return (c > 8 || c < 1 || r > 8 || r < 1);}
+
+int UI::m_pawnMove(const std::string move) {
+    const int c = SCI(move[0])-m_normalize.lowercase_letter;
+    const int r = m_normalize.index[move[1]-m_normalize.number];
+    if (m_outOfBoardBounds(r, c)) {return UI_IS(IMPROPER_INPUT);};
+
+    if (m_board[r+1][c] == Pieces::W_PAWN || m_board[r+2][c] == Pieces::W_PAWN) {
+        MoveResult move_res = m_white.makePawnMove(r-1, c-1);
+        if(move_res.legal) { //r,c is to_go cord, move_res.{r,c} is piece to move
+            m_board[r][c] = m_board[move_res.r][move_res.c];
+            m_board[move_res.r][move_res.c] = Pieces::SPACE;
+            return UI_IS(FULL_REFRESH);
+        }
+    }
+    //TODO: implement blackside pawnmove. keep a bool of current turn player to decide here
+    return UI_IS(IMPROPER_INPUT);
+}
+int UI::m_pieceMove(const std::string move) {
+
+    return UI_IS(IMPROPER_INPUT);
+}
+int UI::m_takePiece(const std::string move) {
+
+    return UI_IS(IMPROPER_INPUT);
+}
 
 // Macros
 #undef SCI
+#undef UI_IS

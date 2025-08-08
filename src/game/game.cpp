@@ -3,6 +3,7 @@
 #include <cctype>
 #include <chrono>
 #include <filesystem>
+#include <iostream>
 #include <mutex>
 #include <thread>
 
@@ -10,7 +11,7 @@
 #include "config/ConfigReader.hpp"
 #include "game/ui/ui.hpp"
 
-#define SCI(arg) static_cast<int>(arg)
+#define UI_IS(arg) static_cast<int>(UI::InputStatus::arg)
 
 namespace {
     using namespace CONFIG;
@@ -29,19 +30,17 @@ Game::~Game() {
 void Game::begin() {
     m_printBoard();
     while (m_game_running) {
-        using uis = UI::InputStatus;
-
         switch (m_input()) {
-            case SCI(uis::FULL_REFRESH):
+            case UI_IS(FULL_REFRESH):
                 m_refreshScreen(); break;
 
-            case SCI(uis::DONT_REFRESH):
+            case UI_IS(DONT_REFRESH):
                 break;
 
-            case SCI(uis::IMPROPER_INPUT):
+            case UI_IS(IMPROPER_INPUT):
                 ui.inputImproper(); break;
 
-            case SCI(uis::END_GAME):
+            case UI_IS(END_GAME):
                 m_game_running = false; break;
         }
     }
@@ -74,25 +73,30 @@ int Game::m_input() {
 int Game::m_inputTyped() {
     std::string input;
     std::getline(std::cin, input);
+    const int input_length = input.length();
 
-    for (char& ch : input) {
-        if (std::isalpha(ch)) {continue;}
-        ch = std::tolower(ch);
+    //guards
+    if (! std::isalpha(input[0])) {return UI_IS(IMPROPER_INPUT);}
+
+    //UPDATE: might change later on
+    if (input_length > 7) { //longest possible command
+        return UI_IS(IMPROPER_INPUT);
     }
 
-    if (input.length() == 3 && input[0] == 'h') { //highlight square
-        return ui.highlight(input);
-    }
+    const bool highlight_command = (input_length == 3 && (input[0] == 'h' || input[0] == 'H'));
+    if (highlight_command) {return ui.highlight(input);}
 
     // commands seperate from chess instructions
     if (m_map_input.find(input) != m_map_input.end()) {
         return m_map_input.at(input);
     }
 
-    return SCI(UI::InputStatus::IMPROPER_INPUT);
+    // treat as chess instruction
+    for (int i = 1; i < input_length; i++) {input[i] = std::tolower(input[i]);}
+    return ui.makeChessNotationMove(input, input_length);
 }
 int Game::m_inputInteractive() const {
-    return SCI(UI::InputStatus::DONT_REFRESH);
+    return UI_IS(DONT_REFRESH);
 }
 
 void Game::m_configDaemonFunction() {
@@ -129,4 +133,4 @@ bool Game::m_hasConfigFileChanged() const {
     return false;
 }
 
-#undef SCI
+#undef UI_IS

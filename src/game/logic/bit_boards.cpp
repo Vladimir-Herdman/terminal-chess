@@ -13,6 +13,10 @@
 #include <cstdint>
 #include <iostream> //REMOVE
 
+#include "types/moves.hpp"
+
+#define SCB_M(arg) static_cast<bool>(Move::arg)
+
 namespace {
     //Usings
     using u64 = std::uint64_t;
@@ -25,15 +29,13 @@ namespace {
 
     constexpr u64 RANK_1 = 0x00000000000000FFull;
     constexpr u64 RANK_2 = 0x000000000000FF00ull;
-    //constexpr u64 RANK_8 = 0xFF00000000000000ull;
 
     constexpr u64 DIAGONAL = 0x0102040810204080ull;
-    //constexpr u64 DIAGONAL_MASK_EAST = 0x0102040810204080ull; //REMOVE?
-    //constexpr u64 DIAGONAL_MASK_WEST = 0x0102040810204080ull;
 
     constexpr u64 ANTIDIAGONAL = 0x8040201008040201ull;
-    //constexpr u64 ANTIDIAGONAL_MASK_EAST = 0ull;
-    //constexpr u64 ANTIDIAGONAL_MASK_WEST = 0ull;
+    //this converts ui values to side compiled values with index's when needed
+    //so, row 7 in ui should be row 0 here with how we u64 interact
+    constexpr int lookup_ui_index[8] = {7, 6, 5, 4, 3 ,2 ,1, 0};
 
     // Compiled Side struct
     struct SideCompiled {
@@ -84,6 +86,8 @@ namespace {
         // so we don't have to generate each time?
     constexpr u64 getFile(const int piece_index) {return (FILE_H << (piece_index % 8));}
     constexpr u64 getRank(const int piece_index) {return (RANK_1 << ((piece_index / 8)*8));}
+    // r and c using ui board numbering, so r=0 means here, but should be left for there
+    constexpr int getPieceIndex(const int r, const int c) {return (lookup_ui_index[r]*8 + lookup_ui_index[c]);}
     constexpr u64 getDiagonal(const int piece_index) {
         //const int piece_x = piece_index % 8; // For future reference if debugging or needed
         //const int piece_y = piece_index / 8;
@@ -224,7 +228,19 @@ namespace {
         }
         return table;
     }
-}
+    void printBB(u64 num) { //REMOVE
+        for (int i = 0; i < 64; i++) {
+            // Check first digit of num and print out, move on to next
+            if ((num & 0x8000000000000000) == 0x8000000000000000) {
+                std::cout << "1 ";
+            } else {std::cout << "0 ";}
+            num <<= 1;
+            if ((i+1) % 8 == 0) {
+                std::cout << '\n';
+            }
+        }
+    }
+} //end unnamed namespace
 
 //TODO: Fix with Side once SideCompiled is finished
 namespace BITBOARDS {
@@ -234,23 +250,59 @@ namespace BITBOARDS {
         constexpr std::array<u64, 64> lookup_pawn_attacks = getPawnAttackLookupTable();  //TODO: Use some white/black finagling to figure out attack index at runtime
     }
 
+    u64 Side::getAllPieces() const {return pawns | bishops | knights | king | queens | rooks;}
+    u64 Side::getAllPawnMoves() const {
+        const u64 opp_piecesMask = (~opposing.getAllPieces());
+        const u64 blockers_mask = (opp_piecesMask & ~getAllPieces());
+
+        const u64 moves_single = (pawns << 8) & opp_piecesMask;
+        const u64 moves_double = (((pawns & RANK_2) << 8) & opp_piecesMask) << 8;
+
+        return (moves_single | moves_double) & blockers_mask;
+    }
+
+    MoveResult Side::makePawnMove(const int r, const int c) {
+        //TODO: need to account for en peassant
+        if (side == 'w') {
+            const int move_index = getPieceIndex(r, c);
+            const u64 move = (1ull<<move_index);
+            const u64 allPawnMoves = getAllPawnMoves();
+
+            if (move & allPawnMoves) {
+                const u64 potential_one = pawns & (move >> 8);
+                const u64 potential_two = pawns & (move >> 16);
+                if (potential_one) {
+                    pawns = ((pawns & ~potential_one) | move);
+                    return {SCB_M(LEGAL), r+2, c+1}; //MoveResult is {legal,row,column}
+                } else if (r == 4 && potential_two) {
+                    pawns = ((pawns & ~potential_two) | move);
+                    return {SCB_M(LEGAL), r+3, c+1};
+                }
+            }
+        }
+        //TODO: blackside pawn movement implementation
+        return {SCB_M(ILLEGAL), SCB_M(NONE), SCB_M(NONE)};
+    }
+
     Side white = {
-        .pawns   = 0x000000000000FF00ull,
-        .rooks   = 0x0000000000000081ull,
-        .knights = 0x0000000000000042ull,
-        .bishops = 0x0000000000000024ull,
-        .queens  = 0x0000000000000010ull,
-        .king    = 0x0000000000000008ull,
-        .opposing = black
+        .pawns    = 0x000000000000FF00ull,
+        .rooks    = 0x0000000000000081ull,
+        .knights  = 0x0000000000000042ull,
+        .bishops  = 0x0000000000000024ull,
+        .queens   = 0x0000000000000010ull,
+        .king     = 0x0000000000000008ull,
+        .side     = 'w',
+        .opposing = black,
     };
     Side black = {
-        .pawns   = 0x00FF000000000000ull,
-        .rooks   = 0x8100000000000000ull,
-        .knights = 0x4200000000000000ull,
-        .bishops = 0x2400000000000000ull,
-        .queens  = 0x1000000000000000ull,
-        .king    = 0x0800000000000000ull,
-        .opposing = white
+        .pawns    = 0x00FF000000000000ull,
+        .rooks    = 0x8100000000000000ull,
+        .knights  = 0x4200000000000000ull,
+        .bishops  = 0x2400000000000000ull,
+        .queens   = 0x1000000000000000ull,
+        .king     = 0x0800000000000000ull,
+        .side     = 'b',
+        .opposing = white,
     };
     //constexpr int popLSB(u64 bitboard) {
     //    for (int i = 0; i < 64; i++) {
@@ -343,3 +395,5 @@ void bitboardDevFunc() {
     static_assert(BITBOARDS::PRECOMPILED::lookup_pawn_attacks[0] > 0, "not compile-time");
 }
 #endif
+
+#undef SCB_M

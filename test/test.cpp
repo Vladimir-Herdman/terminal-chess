@@ -30,7 +30,7 @@ void left_bracket(){
     std::cout << "left bracket\n";
 }
 // FUNCTION LOOKUP TABLES
-int main() {
+int lookups() {
     //struct style lookup can use metadata with command
     struct command_info {
         void (*func)();
@@ -47,4 +47,8 @@ int main() {
     };
     command_info_array_lookup['{']();
     return 0;
+}
+
+int main() {
+    std::cout << (512 | 262144);
 }

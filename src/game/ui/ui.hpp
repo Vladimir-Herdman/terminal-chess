@@ -1,12 +1,10 @@
 #ifndef TERMINALCHESS_GAME_UI_H
 #define TERMINALCHESS_GAME_UI_H
 
-#include <iostream> //REMOVE
 #include <string>
-#include <map>
 
 #include "config/ConfigData.hpp"
-#include "types/classes.hpp"
+#include "game/logic/bit_boards.hpp"
 
 void initializeWhiteBoard();
 
@@ -18,6 +16,7 @@ public:
     int highlight(const std::string input) const;
     void inputImproper() const;
     void refreshBoard() const;
+    int makeChessNotationMove(const std::string input, const int input_length);
 
     enum class Pieces {
         W_PAWN = 0, W_KNIGHT, W_BISHOP, W_ROOK, W_QUEEN, W_KING,
@@ -40,6 +39,11 @@ private:
     std::string m_getPiece(const int piece_val) const;
     void m_getSquareLetters(std::string& square, const int r) const;
     void m_getSquareNumbers(std::string& square, const int c) const;
+    inline bool m_outOfBoardBounds(const int r, const int c) const;
+
+    int m_pawnMove(const std::string move);
+    int m_pieceMove(const std::string move);
+    int m_takePiece(const std::string move);
 
     //TODO: Use references and pointers for config options to later allow deamon
         //thread to update based on config file change live-time
@@ -52,18 +56,6 @@ private:
         &CONFIG::PIECES.b_queen, &CONFIG::PIECES.b_king,
         &CONFIG::PIECES.edge_h, &CONFIG::PIECES.edge_v,
         &CONFIG::PIECES.space
-    };
-    //TODO: Should I be naming with lookup first to better organize lookup tables?
-    //REMOVE BEGIN
-    void m_test1() {std::cout << "test1 func called";}
-    void m_test2() {std::cout << "test2 func called";}
-    void m_test3() {std::cout << "test3 func called";}
-    void m_test4() {std::cout << "test4 func called";}
-    //REMOVE END
-    //NOTE: Need this-> when calling as needs object
-    //(this->*m_lookup_movement_functions[0])();
-    const VoidMemberFuncPtr<UI> m_lookup_movement_functions[4] = {
-        &UI::m_test1, &UI::m_test2, &UI::m_test3, &UI::m_test4
     };
     const std::string* m_lookup_bg[2][2] = {
         {&CONFIG::COLORS.edge, &CONFIG::COLORS.edge},
@@ -98,12 +90,19 @@ private:
         int row = 0;
         int column = 0;
     } m_cursor;
+    const struct {
+        const int lowercase_letter = 96;
+        const int number = 48;
+        const int index[8] = {9, 8, 7, 6, 5, 4, 3, 2};
+    } m_normalize;
 
     enum class m_PieceIndex {
         EDGE_H = 39, EDGE_V = 39
     };
 
     Pieces m_board[10][10];
+    BITBOARDS::Side& m_white = BITBOARDS::white;
+    BITBOARDS::Side& m_black = BITBOARDS::black;
 };
 
 #endif //TERMINALCHESS_GAME_UI_H

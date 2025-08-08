@@ -8,7 +8,7 @@
 #include <conio.h>
 #endif
 
-char getch() {
+char getCharacterPress() {
 #if defined(__unix__) || defined(__APPLE__)
     char buf = 0;
     struct termios old = {};
