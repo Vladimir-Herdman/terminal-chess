@@ -155,13 +155,12 @@ int UI::m_pawnMove(const std::string move) {
     const int r = m_normalize.index[move[1]-m_normalize.number];
     if (m_outOfBoardBounds(r, c)) {return UI_IS(IMPROPER_INPUT);};
 
-    if (m_board[r+1][c] == Pieces::W_PAWN || m_board[r+2][c] == Pieces::W_PAWN) {
-        MoveResult move_res = m_white.makePawnMove(r-1, c-1);
-        if(move_res.legal) { //r,c is to_go cord, move_res.{r,c} is piece to move
-            m_board[r][c] = m_board[move_res.r][move_res.c];
-            m_board[move_res.r][move_res.c] = Pieces::SPACE;
-            return UI_IS(FULL_REFRESH);
-        }
+    MoveResult move_res = m_white.makePawnMove(r-1, c-1);
+    if(move_res.legal) { //r,c is to_go cord, move_res.{r,c} is piece to move
+        m_board[r][c] = m_board[move_res.r][move_res.c];
+        m_board[move_res.r][move_res.c] = Pieces::SPACE;
+        //TODO: potentially partial refresh for changed vector for more efficiency, instead of just reprinting whole board each time?
+        return UI_IS(FULL_REFRESH);
     }
     //TODO: implement blackside pawnmove. keep a bool of current turn player to decide here
     return UI_IS(IMPROPER_INPUT);

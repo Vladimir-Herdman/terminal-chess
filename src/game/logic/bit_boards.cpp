@@ -271,6 +271,8 @@ namespace BITBOARDS {
             if (move & allPawnMoves) {
                 const u64 potential_one = pawns & (move >> 8);
                 const u64 potential_two = pawns & (move >> 16);
+                //TODO: check for king in check for legality of move
+                ////if (isKingInCheck(new_board)) {return ILLEGAL}
                 if (potential_one) {
                     pawns = ((pawns & ~potential_one) | move);
                     return {SCB_M(LEGAL), r+2, c+1}; //MoveResult is {legal,row,column}
