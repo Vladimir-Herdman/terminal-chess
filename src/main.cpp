@@ -33,8 +33,10 @@ int main(int argc, char *argv[]) {
     #endif
 
     // Game will check options and configure, then begin will start everything to stdout
-    // Game cleans up itself
-    Game().begin();
+    // Game cleans up itself, begin runs loop and afterwards returns here to end
+    Game game;
+    game.begin();
+    game.end();
 
     //#ifdef DEV_HELPERS_LATER_REMOVE
     //bitboardDevFunc();

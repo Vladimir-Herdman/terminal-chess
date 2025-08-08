@@ -3,10 +3,12 @@
 #include <cctype>
 #include <chrono>
 #include <filesystem>
+#include <mutex>
 #include <thread>
 
 #include "config/ConfigData.hpp"
 #include "config/ConfigReader.hpp"
+#include "game/ui/ui.hpp"
 
 #define SCI(arg) static_cast<int>(arg)
 
@@ -27,13 +29,30 @@ Game::~Game() {
 void Game::begin() {
     m_printBoard();
     while (m_game_running) {
-        if(m_input()) {
-            m_refreshScreen();
+        using uis = UI::InputStatus;
+
+        switch (m_input()) {
+            case SCI(uis::FULL_REFRESH):
+                m_refreshScreen(); break;
+
+            case SCI(uis::DONT_REFRESH):
+                break;
+
+            case SCI(uis::IMPROPER_INPUT):
+                ui.inputImproper(); break;
+
+            case SCI(uis::END_GAME):
+                m_game_running = false; break;
         }
-        //std::string input;
-        //std::cin >> test;
-        //if (test == "test") {std::cout<<"\nYou got it right!\033[01A\r";}
     }
+}
+void Game::end() {
+    // stop daemon
+    m_config_daemon_running.store(false);
+    m_config_daemon_end.notify_all();
+
+    //TODO
+    // print out results
 }
 
 // Privates
@@ -52,27 +71,46 @@ int Game::m_input() {
     if (OPTIONS.input_interactive) {return m_inputInteractive();}
     return m_inputTyped();
 }
-int Game::m_inputTyped() const {
-    //if (typed == highlight choice) {return DONT_REFRESH}
+int Game::m_inputTyped() {
     std::string input;
-    std::cin >> input;
+    std::getline(std::cin, input);
 
-    if (input.length() == 3 && (input[0] == 'h' || input[0] == 'H')){ //highlight square
-        ui.highlight(input);
-        return SCI(m_InputStatus::DONT_REFRESH);
+    for (char& ch : input) {
+        if (std::isalpha(ch)) {continue;}
+        ch = std::tolower(ch);
     }
-    return SCI(m_InputStatus::FULL_REFRESH);
+
+    if (input.length() == 3 && input[0] == 'h') { //highlight square
+        return ui.highlight(input);
+    }
+
+    // commands seperate from chess instructions
+    if (m_map_input.find(input) != m_map_input.end()) {
+        return m_map_input.at(input);
+    }
+
+    return SCI(UI::InputStatus::IMPROPER_INPUT);
 }
 int Game::m_inputInteractive() const {
-    return SCI(m_InputStatus::DONT_REFRESH);
+    return SCI(UI::InputStatus::DONT_REFRESH);
 }
 
 void Game::m_configDaemonFunction() {
+    std::unique_lock<std::mutex> lock(m_config_daemon_mutex);
     m_config_daemon_running.store(DAEMON.run_daemon);
     m_config_daemon_sleep_time.store(DAEMON.daemon_sleep_milliseconds);
+    bool game_ended_while_sleeping;
 
     while (m_config_daemon_running.load()) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(m_config_daemon_sleep_time.load()));
+        //check for early finish with game end
+        //little gross, but activated in game loop at end condition so thread doesn't keep game open after finish
+        game_ended_while_sleeping = m_config_daemon_end.wait_for(
+            lock,
+            std::chrono::milliseconds(m_config_daemon_sleep_time.load()),
+            [this]{return (m_config_daemon_running.load());}
+        );
+        if (game_ended_while_sleeping) {break;}
+
         if (m_hasConfigFileChanged()) {
             ConfigReader();
             m_config_daemon_sleep_time.store(DAEMON.daemon_sleep_milliseconds);

@@ -3,6 +3,7 @@
 
 #include <iostream> //REMOVE
 #include <string>
+#include <map>
 
 #include "config/ConfigData.hpp"
 #include "types/classes.hpp"
@@ -14,7 +15,8 @@ public:
     UI();
     std::string getSquare(const int r, const int c) const;
     void printBoard() const;
-    void highlight(const std::string input) const;
+    int highlight(const std::string input) const;
+    void inputImproper() const;
     void refreshBoard() const;
 
     enum class Pieces {
@@ -22,17 +24,17 @@ public:
         B_PAWN = 6, B_KNIGHT, B_BISHOP, B_ROOK, B_QUEEN, B_KING,
         EDGE_H = 12, EDGE_V, SPACE,
     };
-    enum class Colors {
-        W_BG = 1, W_FG,
-        B_BG = 0, B_FG,
-        LETTER_FG = 3, NUMBER_FG,
-        RESET = 2,
+    enum class InputStatus {
+        DONT_REFRESH = 0, FULL_REFRESH ,
+        END_GAME,
+        IMPROPER_INPUT,
     };
 
 private:
     friend class Game;
 
     void m_fillInitialBoard();
+    void m_highlight(const int r, const int c) const;
     std::string m_getBgColor(const int r, const int c) const;
     std::string m_getFgColor(const int piece_val) const;
     std::string m_getPiece(const int piece_val) const;
@@ -67,22 +69,35 @@ private:
         {&CONFIG::COLORS.edge, &CONFIG::COLORS.edge},
         {&CONFIG::COLORS.b_bg, &CONFIG::COLORS.w_bg},
     };
-    const std::string* m_lookup_fg[5] = {
-        &CONFIG::COLORS.reset, &CONFIG::COLORS.b_fg, &CONFIG::COLORS.w_fg,
-        &CONFIG::COLORS.letter, &CONFIG::COLORS.number,
-    };
+    const struct {
+        const std::string& reset = CONFIG::COLORS.reset;
+        const std::string& black = CONFIG::COLORS.b_fg;
+        const std::string& white = CONFIG::COLORS.w_fg;
+        const std::string& letter = CONFIG::COLORS.letter;
+        const std::string& number = CONFIG::COLORS.number;
+    } m_colors_fg;
+    const struct {
+        const std::string& highlight_main = CONFIG::COLORS.highlight_main;
+        const std::string& highlight_around = CONFIG::COLORS.highlight_around;
+    } m_colors_bg;
     const char m_lookup_letter[8] = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
     const char m_lookup_number[8] = {'1', '2', '3', '4', '5', '6', '7', '8'};
 
     struct {
         inline std::string clearLine() const {return "\x1B[2K";};
         inline std::string goLinesUp(const int lines) const {return "\033["+std::to_string(lines)+"A";};
+        inline std::string goLinesDown(const int lines) const {return "\033["+std::to_string(lines)+"B";};
+        inline std::string goToColumn(const int c) const {return "\033["+std::to_string(c)+"G";};
     } m_ansi;
-
     const struct {
-        bool letters = CONFIG::OPTIONS.board_letters;
-        bool numbers = CONFIG::OPTIONS.board_numbers;
+        const bool& letters = CONFIG::OPTIONS.board_letters;
+        const bool& numbers = CONFIG::OPTIONS.board_numbers;
+        const bool& interactive = CONFIG::OPTIONS.input_interactive;
     } m_options;
+    const struct {
+        int row = 0;
+        int column = 0;
+    } m_cursor;
 
     enum class m_PieceIndex {
         EDGE_H = 39, EDGE_V = 39

@@ -12,7 +12,7 @@ namespace CONFIG {
         .number = "\x1B[38;2;255;255;255m",
 
         .highlight_main = "\x1B[48;2;235;097;080m",
-        .highlight_around = "\x1B[48;2;227;124;111m",
+        .highlight_around = "\x1B[48;2;247;137;124m",
 
         .b_bg = "\x1B[48;2;119;149;086m",
         .b_fg = "\x1B[38;2;000;000;000m",
