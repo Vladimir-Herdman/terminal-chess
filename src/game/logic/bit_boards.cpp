@@ -285,6 +285,27 @@ namespace BITBOARDS {
         //TODO: blackside pawn movement implementation
         return {SCB_M(ILLEGAL), SCB_M(NONE), SCB_M(NONE)};
     }
+    MoveResult Side::makePieceAttack(const int piece, const int r, const int c) {
+        switch (piece) {
+            //sliders
+            case 'B': //bishop
+                break;
+
+            case 'R': //rook
+                break;
+
+            case 'Q': //queen
+                break;
+
+            //jumpers
+            case 'N': //knight
+                break;
+
+            case 'K': //king
+                break;
+        }
+        return {SCB_M(ILLEGAL), SCB_M(NONE), SCB_M(NONE)};
+    }
 
     Side white = {
         .pawns    = 0x000000000000FF00ull,

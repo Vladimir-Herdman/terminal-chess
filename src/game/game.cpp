@@ -11,6 +11,7 @@
 #include "config/ConfigReader.hpp"
 #include "game/ui/ui.hpp"
 
+#define SCI(arg) static_cast<int>(arg)
 #define UI_IS(arg) static_cast<int>(UI::InputStatus::arg)
 
 namespace {
@@ -133,4 +134,5 @@ bool Game::m_hasConfigFileChanged() const {
     return false;
 }
 
+#undef SCI
 #undef UI_IS

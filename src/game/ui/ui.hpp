@@ -1,6 +1,7 @@
 #ifndef TERMINALCHESS_GAME_UI_H
 #define TERMINALCHESS_GAME_UI_H
 
+#include <array>
 #include <string>
 
 #include "config/ConfigData.hpp"
@@ -28,6 +29,7 @@ public:
         END_GAME,
         IMPROPER_INPUT,
     };
+    enum class Notation {INVALID = 0, VALID};
 
 private:
     friend class Game;
@@ -44,6 +46,7 @@ private:
     int m_pawnMove(const std::string move);
     int m_pieceMove(const std::string move);
     int m_takePiece(const std::string move);
+    bool m_validAttackNotation(const int piece, const int file_to, const int rank_to);
 
     //TODO: Use references and pointers for config options to later allow deamon
         //thread to update based on config file change live-time
@@ -91,10 +94,23 @@ private:
         int column = 0;
     } m_cursor;
     const struct {
-        const int lowercase_letter = 96;
-        const int number = 48;
-        const int index[8] = {9, 8, 7, 6, 5, 4, 3, 2};
+        const int uppercase_letter = 66;  //makes ANSI 'B'=0, 'C'=1...
+        const int lowercase_letter = 97; //makes ANSI 'a'=0, 'b'=1...
+        const int number = 49; //makes ANSI '1'=0, '2'=1...
+        const int index[8] = {8, 7, 6, 5, 4, 3, 2, 1};
     } m_normalize;
+    const struct {
+        const std::array<int, 17> lookup_piece = []() {
+            std::array<int, 17> arr = {};
+            arr.fill(static_cast<int>(Notation::VALID));
+            arr[('B'-'B')] = static_cast<int>(Notation::VALID);
+            arr[('K'-'B')] = static_cast<int>(Notation::VALID);
+            arr[('N'-'B')] = static_cast<int>(Notation::VALID);
+            arr[('Q'-'B')] = static_cast<int>(Notation::VALID);
+            arr[('R'-'B')] = static_cast<int>(Notation::VALID);
+            return arr;
+        }();
+    } m_notation;
 
     enum class m_PieceIndex {
         EDGE_H = 39, EDGE_V = 39

@@ -8,6 +8,7 @@
 
 #define SCI(arg) static_cast<int>(arg)
 #define UI_IS(arg) static_cast<int>(UI::InputStatus::arg)
+#define UI_N(arg) static_cast<int>(UI::Notation::arg)
 
 namespace {
     using u64 = std::uint64_t;
@@ -64,11 +65,11 @@ int UI::highlight(const std::string input) const {
 
     // r and c are 1 indexed so it matches with our printed grid
     if (std::isalpha(ch_one)){
-        r = SCI(ch_two)-m_normalize.number;
-        c = SCI(ch_one)-m_normalize.lowercase_letter;
+        r = ch_two-m_normalize.number;
+        c = ch_one-m_normalize.lowercase_letter;
     } else {
-        r = SCI(ch_one)-m_normalize.number;
-        c = SCI(ch_two)-m_normalize.lowercase_letter;
+        r = ch_one-m_normalize.number;
+        c = ch_two-m_normalize.lowercase_letter;
     }
 
     // guard against something like 'hcw' where out of board bounds
@@ -151,11 +152,11 @@ void UI::m_getSquareNumbers(std::string& square, const int c) const {
 inline bool UI::m_outOfBoardBounds(const int r, const int c) const {return (c > 8 || c < 1 || r > 8 || r < 1);}
 
 int UI::m_pawnMove(const std::string move) {
-    const int c = SCI(move[0])-m_normalize.lowercase_letter;
+    const int c = move[0]-m_normalize.lowercase_letter+1;
     const int r = m_normalize.index[move[1]-m_normalize.number];
-    if (m_outOfBoardBounds(r, c)) {return UI_IS(IMPROPER_INPUT);};
+    if (m_outOfBoardBounds(r, c)) {std::cout<<"r:"<<r<<",c:"<<c;exit(0);return UI_IS(IMPROPER_INPUT);};
 
-    MoveResult move_res = m_white.makePawnMove(r-1, c-1);
+    const MoveResult move_res = m_white.makePawnMove(r-1, c-1);
     if(move_res.legal) { //r,c is to_go cord, move_res.{r,c} is piece to move
         m_board[r][c] = m_board[move_res.r][move_res.c];
         m_board[move_res.r][move_res.c] = Pieces::SPACE;
@@ -170,10 +171,26 @@ int UI::m_pieceMove(const std::string move) {
     return UI_IS(IMPROPER_INPUT);
 }
 int UI::m_takePiece(const std::string move) {
+    const int piece = move[0]-m_normalize.uppercase_letter;
+    if (piece >= 31) { //pawn attack
 
-    return UI_IS(IMPROPER_INPUT);
+    }
+    //subtractions taken from ANSI value table characters to normalize and reduce table size
+    const int r = move[3]-m_normalize.number;
+    const int c = m_normalize.index[move[2]-m_normalize.lowercase_letter];
+    if (! m_validAttackNotation(piece, move[2]-m_normalize.lowercase_letter, move[3]-m_normalize.number)) {return UI_IS(IMPROPER_INPUT);}
+
+    const MoveResult move_res = m_white.makePieceAttack(piece, r-1, c-1);
+    return UI_IS(FULL_REFRESH);
+}
+bool UI::m_validAttackNotation(const int piece, const int file_to, const int rank_to) {
+    if (piece < 0 || piece > 17 || m_notation.lookup_piece[piece] == UI_N(INVALID)) {return false;}
+    if (file_to < 0 || file_to > 7) {return false;}
+    if (rank_to < 0 || rank_to > 7) {return false;}
+    return true;
 }
 
 // Macros
 #undef SCI
 #undef UI_IS
+#undef UI_N

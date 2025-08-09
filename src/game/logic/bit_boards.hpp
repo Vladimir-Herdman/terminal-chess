@@ -21,6 +21,8 @@ namespace BITBOARDS {
         uint64_t getAllPawnMoves() const;
 
         MoveResult makePawnMove(const int r, const int c);
+
+        MoveResult makePieceAttack(const int piece, const int r, const int c);
     };
 
     //TODO:
