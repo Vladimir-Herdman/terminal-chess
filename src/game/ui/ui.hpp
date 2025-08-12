@@ -45,7 +45,9 @@ private:
 
     int m_pawnMove(const std::string move);
     int m_pieceMove(const std::string move);
+    int m_pieceMoveSpecial(const std::string move);
     int m_takePiece(const std::string move);
+    int m_takePieceSpecial(const std::string move);
     bool m_validAttackNotation(const int piece, const int file_to, const int rank_to);
 
     //TODO: Use references and pointers for config options to later allow deamon
@@ -102,7 +104,7 @@ private:
     const struct {
         const std::array<int, 17> lookup_piece = []() {
             std::array<int, 17> arr = {};
-            arr.fill(static_cast<int>(Notation::VALID));
+            arr.fill(static_cast<int>(Notation::INVALID));
             arr[('B'-'B')] = static_cast<int>(Notation::VALID);
             arr[('K'-'B')] = static_cast<int>(Notation::VALID);
             arr[('N'-'B')] = static_cast<int>(Notation::VALID);

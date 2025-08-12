@@ -32,17 +32,18 @@ void Game::begin() {
     m_printBoard();
     while (m_game_running) {
         switch (m_input()) {
-            case UI_IS(FULL_REFRESH):
+            case UI_IS(FULL_REFRESH): {
                 m_refreshScreen(); break;
-
-            case UI_IS(DONT_REFRESH):
+            }
+            case UI_IS(DONT_REFRESH): {
                 break;
-
-            case UI_IS(IMPROPER_INPUT):
+            }
+            case UI_IS(IMPROPER_INPUT): {
                 ui.inputImproper(); break;
-
-            case UI_IS(END_GAME):
+            }
+            case UI_IS(END_GAME): {
                 m_game_running = false; break;
+            }
         }
     }
 }
@@ -77,7 +78,7 @@ int Game::m_inputTyped() {
     const int input_length = input.length();
 
     //guards
-    if (! std::isalpha(input[0])) {return UI_IS(IMPROPER_INPUT);}
+    if (!std::isalpha(input[0])) {return UI_IS(IMPROPER_INPUT);}
 
     //UPDATE: might change later on
     if (input_length > 7) { //longest possible command
@@ -124,7 +125,7 @@ void Game::m_configDaemonFunction() {
     }
 }
 bool Game::m_hasConfigFileChanged() const {
-    if (! std::filesystem::exists(DAEMON.config_path)) {return false;}
+    if (!std::filesystem::exists(DAEMON.config_path)) {return false;}
 
     const auto file_now_last_write = std::filesystem::last_write_time(DAEMON.config_path);
     if (file_now_last_write > DAEMON.last_write) {

@@ -29,14 +29,18 @@ void commandLineArguments(int& argc, char *argv[]) {
     int opt;
     while ((opt = getopt(argc, argv, ":hdv")) != -1) {
         switch (opt) {
-            case 'h': //help
+            case 'h': {//help
                 usage(); break;
-            case 'd': //dry-run
+            }
+            case 'd': {//dry-run
                 CONFIG::OPTIONS.dry_run = true; break;
-            case 'v': //verbose
+            }
+            case 'v': {//verbose
                 CONFIG::OPTIONS.verbose = true; break;
-            case '?':
+            }
+            case '?': {
                 unknownOption(optopt); break;
+            }
         }
     }
 #else

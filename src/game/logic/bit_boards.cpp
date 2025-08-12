@@ -13,6 +13,7 @@
 #include <cstdint>
 #include <iostream> //REMOVE
 
+#include "types/classes.hpp"
 #include "types/moves.hpp"
 
 #define SCB_M(arg) static_cast<bool>(Move::arg)
@@ -36,6 +37,14 @@ namespace {
     //this converts ui values to side compiled values with index's when needed
     //so, row 7 in ui should be row 0 here with how we u64 interact
     constexpr int lookup_ui_index[8] = {7, 6, 5, 4, 3 ,2 ,1, 0};
+    constexpr std::array<MoveConversion, 64> lookup_index_to_ui = []() {
+        std::array<MoveConversion, 64> arr = {};
+        for (int i = 0; i < 64; i++) {
+            const int r = (i/8)+1;
+            const int c = 9-((i%8)+1);
+            arr[i] = {r, c};
+        } return arr;
+    }();
 
     // Compiled Side struct
     struct SideCompiled {
@@ -57,8 +66,8 @@ namespace {
         constexpr u64 getAllBishopMoves(SideCompiled opposing) const;
         constexpr u64 getAllQueenMoves(SideCompiled opposing) const;
 
-        static constexpr u64 getKnightMoves(const u64 piece);
         static constexpr u64 getKingMoves(const u64 piece);
+        static constexpr u64 getKnightMoves(const u64 piece);
     };
 
     constexpr SideCompiled white_compiled {
@@ -171,17 +180,17 @@ namespace {
         }
         return moves;
     }
-    constexpr u64 SideCompiled::getKnightMoves(const u64 piece) {
-        return  ((((piece >> 6) | (piece << 10)) & ~FILE_GH) |
-                (((piece >> 10) | (piece << 6))  & ~FILE_AB) |
-                (((piece >> 15) | (piece << 17)) & ~FILE_H)  |
-                (((piece >> 17) | (piece << 15)) & ~FILE_A));
-    }
     constexpr u64 SideCompiled::getKingMoves(const u64 piece) {
         return  ((piece << 1) & (~FILE_H) | (piece >> 1) & (~FILE_A) |
                 (piece << 8)              | (piece >> 8)             |
                 (piece << 7) & (~FILE_A)  | (piece >> 7) & (~FILE_H) |
                 (piece << 9) & (~FILE_H)  | (piece >> 9) & (~FILE_A));
+    }
+    constexpr u64 SideCompiled::getKnightMoves(const u64 piece) {
+        return  ((((piece >> 6) | (piece << 10)) & ~FILE_GH) |
+                (((piece >> 10) | (piece << 6))  & ~FILE_AB) |
+                (((piece >> 15) | (piece << 17)) & ~FILE_H)  |
+                (((piece >> 17) | (piece << 15)) & ~FILE_A));
     }
     constexpr u64 SideCompiled::m_slidingMoves(const int piece_index, const u64 mask, SideCompiled opposing) const {
         u64 piece_board = 1ull << piece_index;
@@ -243,6 +252,7 @@ namespace {
 } //end unnamed namespace
 
 //TODO: Fix with Side once SideCompiled is finished
+//TODO: fix move generation lookup for sliding pieces once magic bitboards donw
 namespace BITBOARDS {
     namespace PRECOMPILED {
         constexpr std::array<u64, 64> lookup_king_moves = getKingMovesLookupTable();
@@ -250,7 +260,45 @@ namespace BITBOARDS {
         constexpr std::array<u64, 64> lookup_pawn_attacks = getPawnAttackLookupTable();  //TODO: Use some white/black finagling to figure out attack index at runtime
     }
 
+    //mask should be getFIle, getRank, getDiagonal, or getAntidiagonal
+    u64 Side::getSlidingMoves(const int piece_index, const u64 mask) const {
+        u64 piece_board = 1ull << piece_index;
+        u64 moves_board = 0ull;
+        u64 negative = 0ull;
+        u64 friendly = this->getAllPieces();
+
+        u64 occupied = friendly | opposing.getAllPieces();
+        u64 occMask = occupied & mask;
+
+        moves_board = occMask^(occMask-(piece_board<<1));
+        moves_board &= mask;
+
+        negative = occMask^reverseBoard(reverseBoard(occMask)-(reverseBoard(piece_board)<<1));
+        negative &= mask;
+        negative &= (1ull<<piece_index)-1;
+        moves_board |= negative;
+
+        moves_board &= ~friendly;
+        return moves_board;
+    };
+
     u64 Side::getAllPieces() const {return pawns | bishops | knights | king | queens | rooks;}
+
+    u64 Side::getQueenMove(const int piece_index) const {
+        return getSlidingMoves(piece_index, getFile(piece_index))        |
+               getSlidingMoves(piece_index, getRank(piece_index))        |
+               getSlidingMoves(piece_index, getDiagonal(piece_index))    |
+               getSlidingMoves(piece_index, getAntidiagonal(piece_index));
+    }
+    u64 Side::getRookMove(const int piece_index) const {
+        return getSlidingMoves(piece_index, getFile(piece_index)) |
+               getSlidingMoves(piece_index, getRank(piece_index));
+    }
+    u64 Side::getBishopMove(const int piece_index) const {
+        return getSlidingMoves(piece_index, getDiagonal(piece_index)) |
+               getSlidingMoves(piece_index, getAntidiagonal(piece_index));
+    }
+
     u64 Side::getAllPawnMoves() const {
         const u64 opp_piecesMask = (~opposing.getAllPieces());
         const u64 blockers_mask = (opp_piecesMask & ~getAllPieces());
@@ -260,15 +308,50 @@ namespace BITBOARDS {
 
         return (moves_single | moves_double) & blockers_mask;
     }
+    u64 Side::getAllBishopMoves() const {
+        u64 moves = 0ull;
+        u64 bishops_temp = bishops;
+        while (bishops_temp) {
+            int i = std::countr_zero(bishops_temp);
+            bishops_temp &= bishops_temp - 1;
+            moves |= getSlidingMoves(i, getDiagonal(i));
+            moves |= getSlidingMoves(i, getAntidiagonal(i));
+        }
+        return moves;
+    };
+    u64 Side::getAllRookMoves() const {
+        u64 moves = 0ull;
+        u64 rooks_temp = rooks;
+        while (rooks_temp) {
+            int i = std::countr_zero(rooks_temp);
+            rooks_temp &= rooks_temp - 1;
+            moves |= getSlidingMoves(i, getFile(i));
+            moves |= getSlidingMoves(i, getRank(i));
+        }
+        return moves;
+    };
+    u64 Side::getAllQueenMoves() const {
+        u64 moves = 0ull;
+        u64 queens_temp = queens;
+        while (queens_temp) {
+            int i = std::countr_zero(queens_temp);
+            queens_temp &= queens_temp - 1;
+            moves |= getSlidingMoves(i, getFile(i));
+            moves |= getSlidingMoves(i, getRank(i));
+            moves |= getSlidingMoves(i, getDiagonal(i));
+            moves |= getSlidingMoves(i, getAntidiagonal(i));
+        }
+        return moves;
+    };
 
     MoveResult Side::makePawnMove(const int r, const int c) {
         //TODO: need to account for en peassant
         if (side == 'w') {
             const int move_index = getPieceIndex(r, c);
             const u64 move = (1ull<<move_index);
-            const u64 allPawnMoves = getAllPawnMoves();
+            const u64 all_pawn_moves = getAllPawnMoves();
 
-            if (move & allPawnMoves) {
+            if (move & all_pawn_moves) {
                 const u64 potential_one = pawns & (move >> 8);
                 const u64 potential_two = pawns & (move >> 16);
                 //TODO: check for king in check for legality of move
@@ -286,24 +369,37 @@ namespace BITBOARDS {
         return {SCB_M(ILLEGAL), SCB_M(NONE), SCB_M(NONE)};
     }
     MoveResult Side::makePieceAttack(const int piece, const int r, const int c) {
-        switch (piece) {
-            //sliders
-            case 'B': //bishop
-                break;
+        const int move_index = getPieceIndex(r, c);
+        const u64 move = (1ull<<move_index);
 
-            case 'R': //rook
-                break;
-
-            case 'Q': //queen
-                break;
-
-            //jumpers
-            case 'N': //knight
-                break;
-
-            case 'K': //king
-                break;
+        if (!(move & opposing.getAllPieces())) { //no enemy there, so can't do move
+            return {SCB_M(NO_ENEMY), SCB_M(NONE), SCB_M(NONE)};
         }
+
+        //lookup piece specific info, everything else generalized (better than old switch style?)
+        //BEWARE -> gross stinky pointer section ahead
+        u64 piece_board = (this->*lookup_piece_boards[piece]);
+        const U64MemberFuncIntPtrConst<BITBOARDS::Side> individual_piece_move = lookup_move_function[piece];
+        const u64 all_piece_moves = (this->*lookup_all_move_functions[piece])();
+
+        if (move & all_piece_moves) { //possible move
+            while (piece_board) {
+                const int i = std::countr_zero(piece_board);
+                const u64 individual_move = (this->*individual_piece_move)(i);
+
+                if (individual_move & move) { //piece that matches with offered move
+                    MoveConversion piece_in_ui = lookup_index_to_ui[i];
+                    return {SCB_M(LEGAL), piece_in_ui.r, piece_in_ui.c};
+                }
+
+                piece_board &= piece_board - 1;
+            }
+            //if (std::popcount(possible_move) != 1) {return {SCB_M(NOT_SPECIFIC), SCB_M(NONE), SCB_M(NONE)};}
+
+            //TODO: should {and} with opposing pieces, as x is to take something
+            //TODO: Check if king in check after move, to determine if illegal or not
+        }
+
         return {SCB_M(ILLEGAL), SCB_M(NONE), SCB_M(NONE)};
     }
 

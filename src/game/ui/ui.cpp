@@ -93,12 +93,21 @@ void UI::refreshBoard() const {
 }
 int UI::makeChessNotationMove(const std::string input, const int input_length) {
     switch (input_length) {
-        case 2:
+        case 2: {
             return m_pawnMove(input);
-        case 3: //other piece move
+        }
+        case 3: {//other piece move
             return m_pieceMove(input);
-        case 4: //taking a piece
+        }
+        case 4: {//taking a piece
+            if (input[1] != 'x') { //moving piece where same piece type can move to square, same case 5 but moving
+                return m_pieceMoveSpecial(input);
+            }
             return m_takePiece(input);
+        }
+        case 5: {//same piece type can take same, like Nfxe3 with a N also on g4, or N1xe3 if N on same rank on file 3
+            return m_takePieceSpecial(input);
+        }
     }
     return UI_IS(IMPROPER_INPUT);
 }
@@ -115,7 +124,7 @@ void UI::m_highlight(const int r, const int c) const {
     //TODO: make it so if piece there, highlight possible moves/takes available
     std::cout << m_ansi.goLinesUp(r+2) << m_ansi.goToColumn(c*3) //in square
               << highlight << m_colors_fg.reset;
-    if (! m_options.interactive) { //go back to input
+    if (!m_options.interactive) { //go back to input
         std::cout << m_ansi.goLinesDown(r+1) << m_ansi.clearLine() //highlight
                   << "\r" << std::flush;
     }
@@ -167,26 +176,41 @@ int UI::m_pawnMove(const std::string move) {
     return UI_IS(IMPROPER_INPUT);
 }
 int UI::m_pieceMove(const std::string move) {
-
+    //TODO: function - moving a piece on the board
+    return UI_IS(IMPROPER_INPUT);
+}
+int UI::m_pieceMoveSpecial(const std::string move) {
+    //TODO: function - moving a piece on the board, where a same type could also move
+        // notation like Nd(file)e3 if different file's same attack, or R1(rank)a4 if on same file
     return UI_IS(IMPROPER_INPUT);
 }
 int UI::m_takePiece(const std::string move) {
     const int piece = move[0]-m_normalize.uppercase_letter;
-    if (piece >= 31) { //pawn attack
+    if (piece >= 31) { //pawn attack, becuase this means lowercase passed in with x so 'exd4' and ansi lowercase larger than ansi upper
 
     }
     //subtractions taken from ANSI value table characters to normalize and reduce table size
-    const int r = move[3]-m_normalize.number;
-    const int c = m_normalize.index[move[2]-m_normalize.lowercase_letter];
-    if (! m_validAttackNotation(piece, move[2]-m_normalize.lowercase_letter, move[3]-m_normalize.number)) {return UI_IS(IMPROPER_INPUT);}
+    const int r = m_normalize.index[move[3]-m_normalize.number];
+    const int c = move[2]-m_normalize.lowercase_letter+1;
+    if (!m_validAttackNotation(piece, c, r)) {return UI_IS(IMPROPER_INPUT);}
 
     const MoveResult move_res = m_white.makePieceAttack(piece, r-1, c-1);
-    return UI_IS(FULL_REFRESH);
+    //TODO: return based on move result and move pieces
+    if (move_res.legal) {
+        std::cout<<"move returned - r:"<<(move_res.legal?"NO ENEMY TO TAKE":"LEGAL");exit(0);
+        return UI_IS(FULL_REFRESH);
+    }
+    return UI_IS(IMPROPER_INPUT);
+}
+int UI::m_takePieceSpecial(const std::string move) {
+    //TODO: function - taking piece but the special notation for when same piece type could also take it
+        // notation like Nd(file)xe3 if different file's same attack, or R1(rank)xa4 if on same file
+    return UI_IS(IMPROPER_INPUT);
 }
 bool UI::m_validAttackNotation(const int piece, const int file_to, const int rank_to) {
     if (piece < 0 || piece > 17 || m_notation.lookup_piece[piece] == UI_N(INVALID)) {return false;}
-    if (file_to < 0 || file_to > 7) {return false;}
-    if (rank_to < 0 || rank_to > 7) {return false;}
+    if (file_to < 1 || file_to > 8) {return false;}
+    if (rank_to < 1 || rank_to > 8) {return false;}
     return true;
 }
 
